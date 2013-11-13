@@ -16,9 +16,10 @@ PascalAnnotationFileParser::PascalAnnotationFileParser() {
 PascalAnnotationFileParser::~PascalAnnotationFileParser() {
 }
 
-vector<AnnotatedObject> PascalAnnotationFileParser::parseAnnotationFile(string filename) {
-	vector<AnnotatedObject> objects;
+AnnotatedImage PascalAnnotationFileParser::parseAnnotationFile(string filename) {
+	AnnotatedImage image;
 
+	string imageSizeString = "Image size (X x Y x C) : %d x %d x %d";
 	string numberOfObjectsString = "Objects with ground truth : %d";
 	string objectLabelString = "Original label for object %d \"%[^\"]\" : \"%[^\"]\"";
 	string objectCenterPointString = "Center point on object %d \"%[^\"]\" (X, Y) : (%d, %d)";
@@ -38,34 +39,38 @@ vector<AnnotatedObject> PascalAnnotationFileParser::parseAnnotationFile(string f
 		if (line.substr(0, 20) == numberOfObjectsString.substr(0, 20)) {
 			int numberOfObjects;
 			sscanf(line.c_str(), numberOfObjectsString.c_str(), &numberOfObjects);
-//			printf("Number of objects: %d\n", numberOfObjects);
 			for (int i = 0; i < numberOfObjects; i++) {
 				AnnotatedObject a;
-				objects.push_back(a);
+				image.objects.push_back(a);
 			}
+		} else if (line.substr(0, 10) == imageSizeString.substr(0, 10)) {
+			sscanf(line.c_str(), imageSizeString.c_str(), &image.imageWidth, &image.imageHeight, &image.numberOfColors);
 		} else if (line.substr(0, 20) == objectLabelString.substr(0, 20)) {
 			sscanf(line.c_str(), objectLabelString.c_str(), &objectNumber, &objectName, &label);
-			objects[objectNumber - 1].label = string(label);
+			image.objects[objectNumber - 1].label = string(label);
 		} else if (line.substr(0, 20) == objectCenterPointString.substr(0, 20)) {
 			sscanf(line.c_str(), objectCenterPointString.c_str(), &objectNumber, &objectName, &x1, &y1);
-			objects[objectNumber - 1].centerPoint = pair<int, int>(x1, y1);
+			image.objects[objectNumber - 1].centerPoint = pair<int, int>(x1, y1);
 		} else if (line.substr(0, 20) == objectBoundingBoxString.substr(0, 20)) {
 			sscanf(line.c_str(), objectBoundingBoxString.c_str(), &objectNumber, &objectName, &x1, &y1, &x2, &y2);
-			objects[objectNumber - 1].boundingBoxMin = pair<int, int>(x1, y1);
-			objects[objectNumber - 1].boundingBoxMax = pair<int, int>(x2, y2);
+			image.objects[objectNumber - 1].boundingBoxMin = pair<int, int>(x1, y1);
+			image.objects[objectNumber - 1].boundingBoxMax = pair<int, int>(x2, y2);
 		} else {
 //			printf("%s:\n", line.c_str());
 		}
 	}
 
-	for (int o = 0; o < objects.size(); o++) {
+	printf("Image Width: %d\n", image.imageWidth);
+	printf("Image Height: %d\n", image.imageHeight);
+	printf("Number of colors: %d\n", image.numberOfColors);
+	for (int o = 0; o < image.objects.size(); o++) {
 		printf("Object %d:\n", (o + 1));
-		printf("\tLabel: %s\n", objects[o].label.c_str());
-		printf("\tCenter: (%d,%d)\n", objects[o].centerPoint.first, objects[o].centerPoint.second);
-		printf("\tBounding min: (%d,%d)\n", objects[o].boundingBoxMin.first, objects[o].boundingBoxMin.second);
-		printf("\tBounding max: (%d,%d)\n", objects[o].boundingBoxMax.first, objects[o].boundingBoxMax.second);
+		printf("\tLabel: %s\n", image.objects[o].label.c_str());
+		printf("\tCenter: (%d,%d)\n", image.objects[o].centerPoint.first, image.objects[o].centerPoint.second);
+		printf("\tBounding min: (%d,%d)\n", image.objects[o].boundingBoxMin.first, image.objects[o].boundingBoxMin.second);
+		printf("\tBounding max: (%d,%d)\n", image.objects[o].boundingBoxMax.first, image.objects[o].boundingBoxMax.second);
 	}
 
-	return objects;
+	return image;
 }
 

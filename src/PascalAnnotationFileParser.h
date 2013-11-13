@@ -20,12 +20,16 @@ struct AnnotatedObject {
 	pair<int,int> boundingBoxMax;
 };
 
+struct AnnotatedImage{
+	int imageWidth, imageHeight, numberOfColors;
+	vector<AnnotatedObject> objects;
+};
 
 class PascalAnnotationFileParser {
 public:
 	PascalAnnotationFileParser();
 	virtual ~PascalAnnotationFileParser();
-	vector<AnnotatedObject> parseAnnotationFile(string annotationFile);
+	AnnotatedImage parseAnnotationFile(string annotationFile);
 };
 
 
