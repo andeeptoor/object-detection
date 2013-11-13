@@ -5,11 +5,25 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <fstream>
 
 #include "common.h"
 
 using namespace cv;
 using namespace std;
+
+void readAnnotationFile(string filename) {
+	ifstream inputFile(filename.c_str());
+	if (!inputFile) {
+		printf("Cannot open data file [%s]", filename.c_str());
+		exit(EXIT_FAILURE);
+	}
+
+	string line;
+	while (getline(inputFile, line)) {
+		printf("%s:\n", line.c_str());
+	}
+}
 
 int main(int argc, char** argv) {
 	if (argc < 2) {
@@ -31,6 +45,10 @@ int main(int argc, char** argv) {
 	int i, j;
 	for (int f = 0; f < files.size(); f++) {
 		filename = files[f];
+
+		string annotationFile = utils::convertToFileExtension(filename, "txt");
+		readAnnotationFile(annotationFile);
+
 		img = imread(filename);
 		printf("%s:\n", filename.c_str());
 		if (!img.data) {
