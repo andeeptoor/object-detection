@@ -29,28 +29,37 @@ int main(int argc, char** argv) {
 	vector<string> files;
 	utils::recursivelySearchDirectoryForFiles(config.imageDirectory, config.fileExtension, &files);
 
-	Mat img;
+	Mat image;
 	string filename;
 	int i, j;
+	vector<Rect> found, found_filtered;
 	for (int f = 0; f < files.size(); f++) {
 		filename = files[f];
 
 		string annotationFile = utils::convertToFileExtension(filename, "txt");
-		parser.parseAnnotationFile(annotationFile);
+		AnnotatedImage annotatedImage = parser.parseAnnotationFile(annotationFile);
 
-		img = imread(filename);
+		if (annotatedImage.numberOfColors == 1) {
+			image = imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
+		} else {
+			image = imread(filename, CV_LOAD_IMAGE_COLOR);
+		}
+
+		resize(image, image, Size(annotatedImage.imageWidth, annotatedImage.imageHeight));
 		printf("%s:\n", filename.c_str());
-		if (!img.data) {
+		if (!image.data) {
 			continue;
 		}
 
+		found.clear();
+		found_filtered.clear();
+
 		fflush(stdout);
-		vector<Rect> found, found_filtered;
 		double t = (double) getTickCount();
 		// run the detector with default parameters. to get a higher hit-rate
 		// (and more false alarms, respectively), decrease the hitThreshold and
 		// groupThreshold (set groupThreshold to 0 to turn off the grouping completely).
-		hog.detectMultiScale(img, found, 0, Size(8, 8), Size(32, 32), 1.05, 2);
+		hog.detectMultiScale(image, found, 0, Size(8, 8), Size(32, 32), 1.05, 2);
 		t = (double) getTickCount() - t;
 		printf("tdetection time = %gms\n", t * 1000. / cv::getTickFrequency());
 		for (i = 0; i < found.size(); i++) {
@@ -68,13 +77,23 @@ int main(int argc, char** argv) {
 			Rect r = found_filtered[i];
 			// the HOG detector returns slightly larger rectangles than the real objects.
 			// so we slightly shrink the rectangles to get a nicer output.
-			r.x += cvRound(r.width * 0.1);
-			r.width = cvRound(r.width * 0.8);
-			r.y += cvRound(r.height * 0.07);
-			r.height = cvRound(r.height * 0.8);
-			rectangle(img, r.tl(), r.br(), cv::Scalar(0, 255, 0), 3);
+//			r.x += cvRound(r.width * 0.1);
+//			r.width = cvRound(r.width * 0.8);
+//			r.y += cvRound(r.height * 0.07);
+//			r.height = cvRound(r.height * 0.8);
+			rectangle(image, r.tl(), r.br(), cv::Scalar(0, 255, 0), 3);
 		}
-		imshow("people detector", img);
+
+		for (i = 0;  i< annotatedImage.objects.size(); i++) {
+			Point p1,p2;
+			p1.x = annotatedImage.objects[i].boundingBoxMin.first;
+			p1.y = annotatedImage.objects[i].boundingBoxMin.second;
+			p2.x = annotatedImage.objects[i].boundingBoxMax.first;
+			p2.y = annotatedImage.objects[i].boundingBoxMax.second;
+			rectangle(image, p1, p2, cv::Scalar(255, 0, 0), 3);
+		}
+
+		imshow("people detector", image);
 
 		int c = waitKey(0) & 255;
 		if (c == 'q' || c == 'Q' || !f) {
