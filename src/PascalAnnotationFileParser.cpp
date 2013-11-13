@@ -21,8 +21,8 @@ vector<AnnotatedObject> PascalAnnotationFileParser::parseAnnotationFile(string f
 
 	string numberOfObjectsString = "Objects with ground truth : %d";
 	string objectLabelString = "Original label for object %d \"%[^\"]\" : \"%[^\"]\"";
-	string objectCenterPointString = "Objects with ground truth : %d";
-	string objectBoundingBoxString = "Objects with ground truth : %d";
+	string objectCenterPointString = "Center point on object %d \"%[^\"]\" (X, Y) : (%d, %d)";
+	string objectBoundingBoxString = "Bounding box for object %d \"%[^\"]\" (Xmin, Ymin) - (Xmax, Ymax) : (%d, %d) - (%d, %d)";
 
 	ifstream inputFile(filename.c_str());
 	if (!inputFile) {
@@ -33,6 +33,7 @@ vector<AnnotatedObject> PascalAnnotationFileParser::parseAnnotationFile(string f
 	string line;
 	int objectNumber;
 	char label[1024], objectName[1024];
+	int x1, x2, y1, y2;
 	while (getline(inputFile, line)) {
 		if (line.substr(0, 20) == numberOfObjectsString.substr(0, 20)) {
 			int numberOfObjects;
@@ -44,16 +45,25 @@ vector<AnnotatedObject> PascalAnnotationFileParser::parseAnnotationFile(string f
 			}
 		} else if (line.substr(0, 20) == objectLabelString.substr(0, 20)) {
 			sscanf(line.c_str(), objectLabelString.c_str(), &objectNumber, &objectName, &label);
-			printf("Object %d label: %s\n", objectNumber, label);
-			objects[objectNumber-1].label = string(label);
+			objects[objectNumber - 1].label = string(label);
+		} else if (line.substr(0, 20) == objectCenterPointString.substr(0, 20)) {
+			sscanf(line.c_str(), objectCenterPointString.c_str(), &objectNumber, &objectName, &x1, &y1);
+			objects[objectNumber - 1].centerPoint = pair<int, int>(x1, y1);
+		} else if (line.substr(0, 20) == objectBoundingBoxString.substr(0, 20)) {
+			sscanf(line.c_str(), objectBoundingBoxString.c_str(), &objectNumber, &objectName, &x1, &y1, &x2, &y2);
+			objects[objectNumber - 1].boundingBoxMin = pair<int, int>(x1, y1);
+			objects[objectNumber - 1].boundingBoxMax = pair<int, int>(x2, y2);
 		} else {
 			printf("%s:\n", line.c_str());
 		}
 	}
 
 	for (int o = 0; o < objects.size(); o++) {
-		printf("Object %d:\n" , (o+1));
-		printf("\tLabel: %s\n" , objects[o].label.c_str());
+		printf("Object %d:\n", (o + 1));
+		printf("\tLabel: %s\n", objects[o].label.c_str());
+		printf("\tCenter: (%d,%d)\n", objects[o].centerPoint.first, objects[o].centerPoint.second);
+		printf("\tBounding min: (%d,%d)\n", objects[o].boundingBoxMin.first, objects[o].boundingBoxMin.second);
+		printf("\tBounding max: (%d,%d)\n", objects[o].boundingBoxMax.first, objects[o].boundingBoxMax.second);
 	}
 
 	return objects;
