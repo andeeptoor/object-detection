@@ -38,7 +38,7 @@ vector<AnnotatedObject> PascalAnnotationFileParser::parseAnnotationFile(string f
 		if (line.substr(0, 20) == numberOfObjectsString.substr(0, 20)) {
 			int numberOfObjects;
 			sscanf(line.c_str(), numberOfObjectsString.c_str(), &numberOfObjects);
-			printf("Number of objects: %d\n", numberOfObjects);
+//			printf("Number of objects: %d\n", numberOfObjects);
 			for (int i = 0; i < numberOfObjects; i++) {
 				AnnotatedObject a;
 				objects.push_back(a);
@@ -54,7 +54,7 @@ vector<AnnotatedObject> PascalAnnotationFileParser::parseAnnotationFile(string f
 			objects[objectNumber - 1].boundingBoxMin = pair<int, int>(x1, y1);
 			objects[objectNumber - 1].boundingBoxMax = pair<int, int>(x2, y2);
 		} else {
-			printf("%s:\n", line.c_str());
+//			printf("%s:\n", line.c_str());
 		}
 	}
 
