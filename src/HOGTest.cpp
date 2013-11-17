@@ -14,6 +14,11 @@
 using namespace cv;
 using namespace std;
 
+struct Evaluation {
+	vector<int> correctObjects;
+	vector<int> incorrectObjects;
+};
+
 vector<Rect> findObjects(const HOGDescriptor hog, const Mat image) {
 	vector<Rect> found, foundFiltered;
 	int i, j;
@@ -41,6 +46,41 @@ vector<Rect> findObjects(const HOGDescriptor hog, const Mat image) {
 	return foundFiltered;
 }
 
+Rect unionOf(Rect r1, Rect r2) {
+	int x1 = min(r1.x, r2.x);
+	int x2 = max(r1.x + r1.width, r2.x + r2.width);
+	int y1 = min(r1.y, r2.y);
+	int y2 = max(r1.y + r1.height, r2.y + r2.height);
+	return Rect(x1, y1, x2 - x1, y2 - y1);
+}
+
+Evaluation evaluatePredictions(Mat &image, const AnnotatedImage annotatedImage, const vector<Rect> predictedObjects) {
+	Rect actual, predicted, intersection, unionRect;
+	double bestOverlap, currentOverlap;
+	Evaluation evaluation;
+	for (int predictedIndex = 0; predictedIndex < predictedObjects.size(); predictedIndex++) {
+		predicted = predictedObjects[predictedIndex];
+		bestOverlap = 0;
+		currentOverlap = 0;
+		for (int actualIndex = 0; actualIndex < annotatedImage.objects.size(); actualIndex++) {
+			actual = annotatedImage.objects[actualIndex].boundingBox;
+			intersection = (predicted & actual);
+			unionRect = unionOf(predicted, actual);
+			currentOverlap = double(intersection.area()) / double(unionRect.area());
+			if (currentOverlap > 0.5 && currentOverlap > bestOverlap) {
+				bestOverlap = currentOverlap;
+				printf("Best overlap: %f\n", bestOverlap);
+			}
+		}
+
+		if (bestOverlap > 0) {
+			rectangle(image, predicted.tl(), predicted.br(), cv::Scalar(255, 255, 0), 3);
+		}
+	}
+
+	return evaluation;
+}
+
 int main(int argc, char** argv) {
 	if (argc < 2) {
 		printf("Usage: peopledetect (<image_filename> | <image_list>.txt)\n");
@@ -60,8 +100,6 @@ int main(int argc, char** argv) {
 	Mat image;
 	string filename;
 	int i;
-	Rect r, r2;
-	Point actualCenter, compareCenter;
 	for (int f = 0; f < files.size(); f++) {
 		filename = files[f];
 
@@ -82,50 +120,17 @@ int main(int argc, char** argv) {
 
 		vector<Rect> predictedObjects = findObjects(hog, image);
 
-//		for (i = 0; i < predictedObjects.size(); i++) {
-//			Rect r = predictedObjects[i];
-//			rectangle(image, r.tl(), r.br(), cv::Scalar(0, 255, 0), 3);
-//
-//			compareCenter.x = (r.tl().x + r.br().x) / 2;
-//			compareCenter.y = (r.tl().y + r.br().y) / 2;
-//			circle(image, compareCenter, 3, cv::Scalar(0, 255, 0), 3);
-//		}
-
 		//Matching criteria: http://groups.inf.ed.ac.uk/calvin/ethz_pascal_stickmen/downloads/README.txt
-//
 		for (i = 0; i < annotatedImage.objects.size(); i++) {
 			Rect r = annotatedImage.objects[i].boundingBox;
-			rectangle(image, r.tl(), r.br(), cv::Scalar(255, 0, 0), 3);
-
-			actualCenter.x = (r.tl().x + r.br().x) / 2;
-			actualCenter.y = (r.tl().y + r.br().y) / 2;
-			circle(image, actualCenter, 3, cv::Scalar(255, 0, 0), 3);
+//			rectangle(image, r.tl(), r.br(), cv::Scalar(255, 0, 0), 3);
 		}
 
-		int bestObject;
-		double bestDistance, currentDistance;
-		for (int p = 0; p < annotatedImage.objects.size(); p++) {
-			r = annotatedImage.objects[i].boundingBox;
-			actualCenter.x = (r.tl().x + r.br().x) / 2;
-			actualCenter.y = (r.tl().y + r.br().y) / 2;
-			bestObject = -1;
-			bestDistance = INFINITY;
-			for (int a = 0; a < predictedObjects.size(); a++) {
-				r2 = predictedObjects[a];
-				compareCenter.x = (r2.tl().x + r2.br().x) / 2;
-				compareCenter.y = (r2.tl().y + r2.br().y) / 2;
-				currentDistance = sqrt(pow(double(actualCenter.x - compareCenter.x), 2) + pow(double(actualCenter.y - compareCenter.y), 2));
-				if (currentDistance < bestDistance) {
-					bestDistance = currentDistance;
-					bestObject = a;
-				}
-			}
+		Evaluation evaluation = evaluatePredictions(image, annotatedImage, predictedObjects);
 
-			if (bestObject >= 0) {
-				r = predictedObjects[bestObject];
-				rectangle(image, r.tl(), r.br(), cv::Scalar(0, 255, 0), 3);
-			}
-		}
+		printf("Evaluation:\n");
+		printf("\tNumber correct:%lu\n", evaluation.correctObjects.size());
+		printf("\tNumber incorrect:%lu\n", evaluation.incorrectObjects.size());
 
 		imshow("people detector", image);
 
