@@ -50,11 +50,11 @@ AnnotatedImage PascalAnnotationFileParser::parseAnnotationFile(string filename) 
 			image.objects[objectNumber - 1].label = string(label);
 		} else if (line.substr(0, 20) == objectCenterPointString.substr(0, 20)) {
 			sscanf(line.c_str(), objectCenterPointString.c_str(), &objectNumber, &objectName, &x1, &y1);
-			image.objects[objectNumber - 1].centerPoint = pair<int, int>(x1, y1);
+			image.objects[objectNumber - 1].centerPoint = Point(x1, y1);
 		} else if (line.substr(0, 20) == objectBoundingBoxString.substr(0, 20)) {
 			sscanf(line.c_str(), objectBoundingBoxString.c_str(), &objectNumber, &objectName, &x1, &y1, &x2, &y2);
-			image.objects[objectNumber - 1].boundingBoxMin = pair<int, int>(x1, y1);
-			image.objects[objectNumber - 1].boundingBoxMax = pair<int, int>(x2, y2);
+			Rect r(Point(x1,y1),Point(x2,y2));
+			image.objects[objectNumber - 1].boundingBox = r;
 		} else {
 //			printf("%s:\n", line.c_str());
 		}
@@ -66,9 +66,9 @@ AnnotatedImage PascalAnnotationFileParser::parseAnnotationFile(string filename) 
 	for (int o = 0; o < image.objects.size(); o++) {
 		printf("Object %d:\n", (o + 1));
 		printf("\tLabel: %s\n", image.objects[o].label.c_str());
-		printf("\tCenter: (%d,%d)\n", image.objects[o].centerPoint.first, image.objects[o].centerPoint.second);
-		printf("\tBounding min: (%d,%d)\n", image.objects[o].boundingBoxMin.first, image.objects[o].boundingBoxMin.second);
-		printf("\tBounding max: (%d,%d)\n", image.objects[o].boundingBoxMax.first, image.objects[o].boundingBoxMax.second);
+		printf("\tCenter: (%d,%d)\n", image.objects[o].centerPoint.x, image.objects[o].centerPoint.y);
+		printf("\tBounding min: (%d,%d)\n", image.objects[o].boundingBox.tl().x, image.objects[o].boundingBox.tl().y);
+		printf("\tBounding max: (%d,%d)\n", image.objects[o].boundingBox.br().x, image.objects[o].boundingBox.br().y);
 	}
 
 	return image;

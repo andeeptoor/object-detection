@@ -10,14 +10,15 @@
 
 #include <string>
 #include <vector>
+#include "opencv2/imgproc/imgproc.hpp"
 
+using namespace cv;
 using namespace std;
 
 struct AnnotatedObject {
 	string label;
-	pair<int, int> centerPoint;
-	pair<int,int> boundingBoxMin;
-	pair<int,int> boundingBoxMax;
+	Point centerPoint;
+	Rect boundingBox;
 };
 
 struct AnnotatedImage{
