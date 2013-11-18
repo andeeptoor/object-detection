@@ -1,6 +1,6 @@
 #include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/objdetect/objdetect.hpp"
 #include "opencv2/highgui/highgui.hpp"
+#include "opencv2/contrib/contrib.hpp"
 
 #include <stdio.h>
 #include <string.h>
@@ -59,29 +59,29 @@ void evaluatePredictions(Evaluation &evaluation, const AnnotatedImage annotatedI
 				evaluation.incorrectObjects++;
 			}
 		} else {
-				evaluation.incorrectObjects++;
+			evaluation.incorrectObjects++;
 		}
 	}
 }
 
 int main(int argc, char** argv) {
 	if (argc < 2) {
-		printf("Usage: peopledetect (<image_filename> | <image_list>.txt)\n");
+		printf("Usage: <configFile>");
 		return EXIT_FAILURE;
 	}
 
 	Config config = readConfigFile(argv[1]);
 	PascalAnnotationFileParser parser;
-
-	ObjectDetector * detector = new HOGObjectDetector();
-	namedWindow("people detector", 1);
+	vector<ObjectDetector *> detectors;
+	detectors.push_back(new HOGObjectDetector());
+	vector<Evaluation> evaluations(detectors.size());
 
 	vector<string> files;
 	utils::recursivelySearchDirectoryForFiles(config.imageDirectory, config.fileExtension, &files);
 
 	Mat image;
 	string filename;
-	Evaluation evaluation;
+	int i;
 	for (int f = 0; f < files.size(); f++) {
 		filename = files[f];
 
@@ -101,15 +101,23 @@ int main(int argc, char** argv) {
 			continue;
 		}
 
-		vector<Rect> predictedObjects = detector->detectObjects(image);
-		evaluatePredictions(evaluation, annotatedImage, predictedObjects);
+		for (i = 0; i < detectors.size(); i++) {
+			TickMeter tm;
+			tm.start();
+			vector<Rect> predictedObjects = detectors[i]->detectObjects(image);
+			tm.stop();
+			printf("Detection time = %f sec\n",tm.getTimeSec());
+			evaluatePredictions(evaluations[i], annotatedImage, predictedObjects);
+		}
 	}
 
-	printf("Evaluation:\n");
-	printf("\tTrue detection rate:%f%%\n", double(evaluation.correctObjects) / double(evaluation.totalObjects) * 100.0);
-	printf("\tFalse alarm rate:%f%%\n", double(evaluation.incorrectObjects) / double(files.size()) * 100.0);
-	printf("\tNumber correct:%d\n", evaluation.correctObjects);
-	printf("\tNumber incorrect:%d\n", evaluation.incorrectObjects);
-	printf("\tTotal objects:%d\n", evaluation.totalObjects);
+	for (i = 0; i < evaluations.size(); i++) {
+		printf("Evaluation %d:\n", i+1);
+		printf("\tTrue detection rate:%f%%\n", double(evaluations[i].correctObjects) / double(evaluations[i].totalObjects) * 100.0);
+		printf("\tFalse alarm rate:%f%%\n", double(evaluations[i].incorrectObjects) / double(files.size()) * 100.0);
+		printf("\tNumber correct:%d\n", evaluations[i].correctObjects);
+		printf("\tNumber incorrect:%d\n", evaluations[i].incorrectObjects);
+		printf("\tTotal objects:%d\n", evaluations[i].totalObjects);
+	}
 	return EXIT_SUCCESS;
 }
