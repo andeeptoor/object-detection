@@ -19,6 +19,7 @@ struct Evaluation {
 	int correctObjects;
 	int incorrectObjects;
 	int totalObjects;
+	double totalDetectionTime;
 };
 
 Rect unionOf(Rect r1, Rect r2) {
@@ -107,6 +108,7 @@ int main(int argc, char** argv) {
 			vector<Rect> predictedObjects = detectors[i]->detectObjects(image);
 			tm.stop();
 			printf("\t\tDetection time = %f sec\n",tm.getTimeSec());
+			evaluations[i].totalDetectionTime+=tm.getTimeSec();
 			evaluatePredictions(evaluations[i], annotatedImage, predictedObjects);
 		}
 	}
@@ -118,6 +120,7 @@ int main(int argc, char** argv) {
 		printf("\tNumber correct:%d\n", evaluations[i].correctObjects);
 		printf("\tNumber incorrect:%d\n", evaluations[i].incorrectObjects);
 		printf("\tTotal objects:%d\n", evaluations[i].totalObjects);
+		printf("\tTotal detection time = %f sec\n",evaluations[i].totalDetectionTime);
 	}
 	return EXIT_SUCCESS;
 }
