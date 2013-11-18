@@ -47,7 +47,7 @@ void evaluatePredictions(Evaluation &evaluation, const AnnotatedImage annotatedI
 			if (currentOverlap > 0.5 && currentOverlap > bestOverlap) {
 				bestOverlap = currentOverlap;
 				bestObject = actualIndex;
-				printf("\tBest overlap: %f\n", bestOverlap);
+				printf("\t\tBest overlap: %f\n", bestOverlap);
 			}
 		}
 
@@ -101,17 +101,18 @@ int main(int argc, char** argv) {
 		}
 
 		for (i = 0; i < detectors.size(); i++) {
+			printf("\tDetector %s\n",detectors[i]->name().c_str());
 			TickMeter tm;
 			tm.start();
 			vector<Rect> predictedObjects = detectors[i]->detectObjects(image);
 			tm.stop();
-			printf("Detection time = %f sec\n",tm.getTimeSec());
+			printf("\t\tDetection time = %f sec\n",tm.getTimeSec());
 			evaluatePredictions(evaluations[i], annotatedImage, predictedObjects);
 		}
 	}
 
 	for (i = 0; i < evaluations.size(); i++) {
-		printf("Evaluation %d:\n", i+1);
+		printf("Evaluation %d: (%s)\n", i+1, detectors[i]->name().c_str());
 		printf("\tTrue detection rate:%f%%\n", double(evaluations[i].correctObjects) / double(evaluations[i].totalObjects) * 100.0);
 		printf("\tFalse alarm rate:%f%%\n", double(evaluations[i].incorrectObjects) / double(files.size()) * 100.0);
 		printf("\tNumber correct:%d\n", evaluations[i].correctObjects);

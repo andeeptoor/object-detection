@@ -12,6 +12,7 @@ ObjectDetector::~ObjectDetector() {
 }
 
 HOGObjectDetector::HOGObjectDetector() {
+	printf("Detector: %s\n", name().c_str());
 	hog.setSVMDetector(HOGDescriptor::getDefaultPeopleDetector());
 }
 
@@ -43,6 +44,8 @@ LatentSVMObjectDetector::LatentSVMObjectDetector(string model, double _overlapTh
 	this->overlapThreshold = _overlapThreshold;
 	this->numberOfThreads = _numberOfThreads;
 
+	printf("Detector: %s\n", name().c_str());
+
 	vector<string> modelFilenames;
 	modelFilenames.push_back(model);
 	detector.load(modelFilenames);
@@ -52,9 +55,9 @@ LatentSVMObjectDetector::LatentSVMObjectDetector(string model, double _overlapTh
 	}
 
 	const vector<string>& classNames = detector.getClassNames();
-	printf("Loaded %lu models:\n", classNames.size());
+	printf("\tLoaded %lu models:\n", classNames.size());
 	for (size_t i = 0; i < classNames.size(); i++) {
-		printf("\tModel %lu: [%s]\n", i + 1, classNames[i].c_str());
+		printf("\t\tModel %lu: [%s]\n", i + 1, classNames[i].c_str());
 	}
 }
 
