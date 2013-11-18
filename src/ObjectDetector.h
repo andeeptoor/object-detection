@@ -31,10 +31,12 @@ private:
 class LatentSVMObjectDetector : public ObjectDetector{
 
 public:
-	LatentSVMObjectDetector(string model);
+	LatentSVMObjectDetector(string model, double _overlapThreshold, int _numberOfThreads);
 	vector<Rect> detectObjects(Mat image);
 private:
 	LatentSvmDetector detector;
+	double overlapThreshold;
+	int numberOfThreads;
 };
 
 #endif /* OBJECTDETECTOR_H_ */

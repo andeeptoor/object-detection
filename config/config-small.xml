@@ -12,6 +12,8 @@
 		<detector>
 			<type>LatentSVMObjectDetector</type>
 			<model>/sb/peopleDetectionComparison/resources/latentSVMModels/person.xml</model>
+			<overlapThreshold>0.2</overlapThreshold>
+			<numberOfThreads>3</numberOfThreads>
 		</detector>
 	</detectors>
 </config>

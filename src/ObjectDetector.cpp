@@ -39,7 +39,10 @@ vector<Rect> HOGObjectDetector::detectObjects(Mat image) {
 	return foundFiltered;
 }
 
-LatentSVMObjectDetector::LatentSVMObjectDetector(string model) {
+LatentSVMObjectDetector::LatentSVMObjectDetector(string model, double _overlapThreshold, int _numberOfThreads) {
+	this->overlapThreshold = _overlapThreshold;
+	this->numberOfThreads = _numberOfThreads;
+
 	vector<string> modelFilenames;
 	modelFilenames.push_back(model);
 	detector.load(modelFilenames);
@@ -57,5 +60,12 @@ LatentSVMObjectDetector::LatentSVMObjectDetector(string model) {
 
 vector<Rect> LatentSVMObjectDetector::detectObjects(Mat image) {
 	vector<Rect> foundFiltered;
+
+	vector<LatentSvmDetector::ObjectDetection> detections;
+	detector.detect(image, detections, overlapThreshold, numberOfThreads);
+	for (size_t i = 0; i < detections.size(); i++) {
+		const LatentSvmDetector::ObjectDetection& od = detections[i];
+		foundFiltered.push_back(od.rect);
+	}
 	return foundFiltered;
 }

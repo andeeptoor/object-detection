@@ -27,8 +27,9 @@ Config readConfigFile(char* configFile) {
 			config.objectDetectors.push_back(new HOGObjectDetector());
 		} else if (utils::equals(type, "LatentSVMObjectDetector")){
 			string model = detectorElement->FirstChildElement("model")->GetText();
-			config.objectDetectors.push_back(new LatentSVMObjectDetector(model));
-
+			double overlapThreshold = utils::stringToDouble(detectorElement->FirstChildElement("overlapThreshold")->GetText());
+			int numberOfThreads = utils::stringToInt(detectorElement->FirstChildElement("numberOfThreads")->GetText());
+			config.objectDetectors.push_back(new LatentSVMObjectDetector(model, overlapThreshold, numberOfThreads));
 		}
 		detectorElement = detectorElement->NextSiblingElement("detector");
 	}
