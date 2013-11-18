@@ -5,4 +5,7 @@
 		<directory>/sb/peopleDetectionComparison/resources</directory>
 		<annotationsDirectory>/sb/peopleDetectionComparison/resources</annotationsDirectory>
 	</image>
+	<detection>
+		<latentSVMModeL>/sb/peopleDetectionComparison/resources/latentSVMModels/person.xml</latentSVMModeL>
+	</detection>
 </config>

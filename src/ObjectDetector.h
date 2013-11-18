@@ -28,4 +28,13 @@ private:
 	HOGDescriptor hog;
 };
 
+class LatentSVMObjectDetector : public ObjectDetector{
+
+public:
+	LatentSVMObjectDetector(string model);
+	vector<Rect> detectObjects(Mat image);
+private:
+	LatentSvmDetector detector;
+};
+
 #endif /* OBJECTDETECTOR_H_ */

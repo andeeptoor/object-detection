@@ -17,6 +17,8 @@ Config readConfigFile(char* configFile) {
 	config.fileExtension = imageElement->FirstChildElement("fileExtension")->GetText();
 	config.imageDirectory = imageElement->FirstChildElement("directory")->GetText();
 	config.imageAnnotationsDirectory = imageElement->FirstChildElement("annotationsDirectory")->GetText();
+	XMLElement* detectionElement = configElement->FirstChildElement("detection");
+	config.detectionLatentSVMModel = detectionElement->FirstChildElement("latentSVMModeL")->GetText();
 
 	return config;
 }

@@ -27,6 +27,7 @@ struct Config {
 	string fileExtension;
 	string imageDirectory;
 	string imageAnnotationsDirectory;
+	string detectionLatentSVMModel;
 };
 
 Config readConfigFile(char* configFile);

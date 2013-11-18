@@ -74,6 +74,7 @@ int main(int argc, char** argv) {
 	PascalAnnotationFileParser parser;
 	vector<ObjectDetector *> detectors;
 	detectors.push_back(new HOGObjectDetector());
+	detectors.push_back(new LatentSVMObjectDetector(config.detectionLatentSVMModel));
 	vector<Evaluation> evaluations(detectors.size());
 
 	vector<string> files;

@@ -7,7 +7,7 @@
 
 #include "ObjectDetector.h"
 
-ObjectDetector::~ObjectDetector(){
+ObjectDetector::~ObjectDetector() {
 
 }
 
@@ -36,5 +36,26 @@ vector<Rect> HOGObjectDetector::detectObjects(Mat image) {
 			foundFiltered.push_back(r);
 		}
 	}
+	return foundFiltered;
+}
+
+LatentSVMObjectDetector::LatentSVMObjectDetector(string model) {
+	vector<string> modelFilenames;
+	modelFilenames.push_back(model);
+	detector.load(modelFilenames);
+	if (detector.empty()) {
+		printf("Model [%s] can't be loaded\n", model.c_str());
+		exit(EXIT_FAILURE);
+	}
+
+	const vector<string>& classNames = detector.getClassNames();
+	printf("Loaded %lu models:\n", classNames.size());
+	for (size_t i = 0; i < classNames.size(); i++) {
+		printf("\tModel %lu: [%s]\n", i + 1, classNames[i].c_str());
+	}
+}
+
+vector<Rect> LatentSVMObjectDetector::detectObjects(Mat image) {
+	vector<Rect> foundFiltered;
 	return foundFiltered;
 }
