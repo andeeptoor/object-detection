@@ -27,7 +27,7 @@ AnnotatedImage PascalAnnotationFileParser::parseAnnotationFile(string filename) 
 
 	ifstream inputFile(filename.c_str());
 	if (!inputFile) {
-		printf("Cannot open data file [%s]", filename.c_str());
+		printf("Cannot open data file [%s]\n", filename.c_str());
 		exit(EXIT_FAILURE);
 	}
 
@@ -60,16 +60,16 @@ AnnotatedImage PascalAnnotationFileParser::parseAnnotationFile(string filename) 
 		}
 	}
 
-	printf("Image Width: %d\n", image.imageWidth);
-	printf("Image Height: %d\n", image.imageHeight);
-	printf("Number of colors: %d\n", image.numberOfColors);
-	for (int o = 0; o < image.objects.size(); o++) {
-		printf("Object %d:\n", (o + 1));
-		printf("\tLabel: %s\n", image.objects[o].label.c_str());
-		printf("\tCenter: (%d,%d)\n", image.objects[o].centerPoint.x, image.objects[o].centerPoint.y);
-		printf("\tBounding min: (%d,%d)\n", image.objects[o].boundingBox.tl().x, image.objects[o].boundingBox.tl().y);
-		printf("\tBounding max: (%d,%d)\n", image.objects[o].boundingBox.br().x, image.objects[o].boundingBox.br().y);
-	}
+//	printf("Image Width: %d\n", image.imageWidth);
+//	printf("Image Height: %d\n", image.imageHeight);
+//	printf("Number of colors: %d\n", image.numberOfColors);
+//	for (int o = 0; o < image.objects.size(); o++) {
+//		printf("Object %d:\n", (o + 1));
+//		printf("\tLabel: %s\n", image.objects[o].label.c_str());
+//		printf("\tCenter: (%d,%d)\n", image.objects[o].centerPoint.x, image.objects[o].centerPoint.y);
+//		printf("\tBounding min: (%d,%d)\n", image.objects[o].boundingBox.tl().x, image.objects[o].boundingBox.tl().y);
+//		printf("\tBounding max: (%d,%d)\n", image.objects[o].boundingBox.br().x, image.objects[o].boundingBox.br().y);
+//	}
 
 	return image;
 }

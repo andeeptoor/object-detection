@@ -16,6 +16,7 @@ Config readConfigFile(char* configFile) {
 	XMLElement* imageElement = configElement->FirstChildElement("image");
 	config.fileExtension = imageElement->FirstChildElement("fileExtension")->GetText();
 	config.imageDirectory = imageElement->FirstChildElement("directory")->GetText();
+	config.imageAnnotationsDirectory = imageElement->FirstChildElement("annotationsDirectory")->GetText();
 
 	return config;
 }

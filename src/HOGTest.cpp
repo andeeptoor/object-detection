@@ -15,8 +15,9 @@ using namespace cv;
 using namespace std;
 
 struct Evaluation {
-	vector<int> correctObjects;
-	vector<int> incorrectObjects;
+	int correctObjects;
+	int incorrectObjects;
+	int totalObjects;
 };
 
 vector<Rect> findObjects(const HOGDescriptor hog, const Mat image) {
@@ -31,7 +32,7 @@ vector<Rect> findObjects(const HOGDescriptor hog, const Mat image) {
 	// groupThreshold (set groupThreshold to 0 to turn off the grouping completely).
 	hog.detectMultiScale(image, found, 0, Size(8, 8), Size(32, 32), 1.05, 2);
 	t = (double) getTickCount() - t;
-	printf("tdetection time = %gms\n", t * 1000. / cv::getTickFrequency());
+	printf("\tDetection time = %gms\n", t * 1000. / cv::getTickFrequency());
 	for (i = 0; i < found.size(); i++) {
 		r = found[i];
 		for (j = 0; j < found.size(); j++) {
@@ -54,10 +55,12 @@ Rect unionOf(Rect r1, Rect r2) {
 	return Rect(x1, y1, x2 - x1, y2 - y1);
 }
 
-Evaluation evaluatePredictions(Mat &image, const AnnotatedImage annotatedImage, const vector<Rect> predictedObjects) {
+void evaluatePredictions(Evaluation &evaluation, const AnnotatedImage annotatedImage, const vector<Rect> predictedObjects) {
 	Rect actual, predicted, intersection, unionRect;
 	double bestOverlap, currentOverlap;
-	Evaluation evaluation;
+	vector<bool> found(annotatedImage.objects.size(), false);
+	int bestObject;
+	evaluation.totalObjects += annotatedImage.objects.size();
 	for (int predictedIndex = 0; predictedIndex < predictedObjects.size(); predictedIndex++) {
 		predicted = predictedObjects[predictedIndex];
 		bestOverlap = 0;
@@ -69,16 +72,20 @@ Evaluation evaluatePredictions(Mat &image, const AnnotatedImage annotatedImage, 
 			currentOverlap = double(intersection.area()) / double(unionRect.area());
 			if (currentOverlap > 0.5 && currentOverlap > bestOverlap) {
 				bestOverlap = currentOverlap;
-				printf("Best overlap: %f\n", bestOverlap);
+				bestObject = actualIndex;
+				printf("\tBest overlap: %f\n", bestOverlap);
 			}
 		}
 
 		if (bestOverlap > 0) {
-			rectangle(image, predicted.tl(), predicted.br(), cv::Scalar(255, 255, 0), 3);
+			if (!found[bestObject]) {
+				evaluation.correctObjects++;
+				found[bestObject] = true;
+			} else {
+				evaluation.incorrectObjects++;
+			}
 		}
 	}
-
-	return evaluation;
 }
 
 int main(int argc, char** argv) {
@@ -99,11 +106,12 @@ int main(int argc, char** argv) {
 
 	Mat image;
 	string filename;
-	int i;
+	Evaluation evaluation;
 	for (int f = 0; f < files.size(); f++) {
 		filename = files[f];
 
-		string annotationFile = utils::convertToFileExtension(filename, "txt");
+		string annotationFile = utils::convertToParentDirectory(filename, config.imageAnnotationsDirectory);
+		annotationFile = utils::convertToFileExtension(annotationFile, "txt");
 		AnnotatedImage annotatedImage = parser.parseAnnotationFile(annotationFile);
 
 		if (annotatedImage.numberOfColors == 1) {
@@ -113,31 +121,19 @@ int main(int argc, char** argv) {
 		}
 
 		resize(image, image, Size(annotatedImage.imageWidth, annotatedImage.imageHeight));
-		printf("%s:\n", filename.c_str());
+		printf("File[%d/%lu]: %s\n", f + 1, files.size(), filename.c_str());
 		if (!image.data) {
 			continue;
 		}
 
 		vector<Rect> predictedObjects = findObjects(hog, image);
-
-		//Matching criteria: http://groups.inf.ed.ac.uk/calvin/ethz_pascal_stickmen/downloads/README.txt
-		for (i = 0; i < annotatedImage.objects.size(); i++) {
-			Rect r = annotatedImage.objects[i].boundingBox;
-//			rectangle(image, r.tl(), r.br(), cv::Scalar(255, 0, 0), 3);
-		}
-
-		Evaluation evaluation = evaluatePredictions(image, annotatedImage, predictedObjects);
-
-		printf("Evaluation:\n");
-		printf("\tNumber correct:%lu\n", evaluation.correctObjects.size());
-		printf("\tNumber incorrect:%lu\n", evaluation.incorrectObjects.size());
-
-		imshow("people detector", image);
-
-		int c = waitKey(0) & 255;
-		if (c == 'q' || c == 'Q' || !f) {
-			break;
-		}
+		evaluatePredictions(evaluation, annotatedImage, predictedObjects);
 	}
+
+	printf("Evaluation:\n");
+	printf("\tPercent correct:%f%%\n", double(evaluation.correctObjects) / double(evaluation.totalObjects) * 100.0);
+	printf("\tNumber correct:%d\n", evaluation.correctObjects);
+	printf("\tNumber incorrect:%d\n", evaluation.incorrectObjects);
+	printf("\tTotal objects:%d\n", evaluation.totalObjects);
 	return EXIT_SUCCESS;
 }

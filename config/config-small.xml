@@ -2,6 +2,7 @@
 <config>
 	<image>
 		<fileExtension>png</fileExtension>
-		<directory>/sb/peopleDetectionComparison/resources/</directory>
+		<directory>/sb/peopleDetectionComparison/resources</directory>
+		<annotationsDirectory>/sb/peopleDetectionComparison/resources</annotationsDirectory>
 	</image>
 </config>

@@ -26,6 +26,7 @@ struct TimeSeries {
 struct Config {
 	string fileExtension;
 	string imageDirectory;
+	string imageAnnotationsDirectory;
 };
 
 Config readConfigFile(char* configFile);

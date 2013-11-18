@@ -98,12 +98,30 @@ string getFileWithoutExtension(string fileName) {
 	return "";
 }
 
+string getFileWithoutParentDirectory(string fileName) {
+	std::string::size_type index;
+	index = fileName.rfind('/');
+	if (index != std::string::npos) {
+		string converted = fileName.substr(index+1);
+		return converted;
+	}
+	return "";
+}
+
+string convertToParentDirectory(string file, string parentDirectory){
+	string fileWithoutParentDirectory = utils::getFileWithoutParentDirectory(file);
+	stringstream stream1;
+	stream1 << parentDirectory << "/" << fileWithoutParentDirectory;
+	string convertedFileName = stream1.str();
+	return convertedFileName;
+}
+
 string getParentDirectory(string fileName) {
-	std::string::size_type indexOfDot;
-	indexOfDot = fileName.rfind('/');
-	if (indexOfDot != std::string::npos) {
-		string actualFileWithoutExtension = fileName.substr(0, indexOfDot);
-		return actualFileWithoutExtension;
+	std::string::size_type index;
+	index = fileName.rfind('/');
+	if (index != std::string::npos) {
+		string converted = fileName.substr(0, index);
+		return converted;
 	}
 	return "";
 }
