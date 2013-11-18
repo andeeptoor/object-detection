@@ -17,8 +17,21 @@ Config readConfigFile(char* configFile) {
 	config.fileExtension = imageElement->FirstChildElement("fileExtension")->GetText();
 	config.imageDirectory = imageElement->FirstChildElement("directory")->GetText();
 	config.imageAnnotationsDirectory = imageElement->FirstChildElement("annotationsDirectory")->GetText();
-	XMLElement* detectionElement = configElement->FirstChildElement("detection");
-	config.detectionLatentSVMModel = detectionElement->FirstChildElement("latentSVMModeL")->GetText();
+	XMLElement* detectors = configElement->FirstChildElement("detectors");
+
+	XMLElement* detectorElement = detectors->FirstChildElement("detector");
+
+	while (detectorElement != NULL) {
+		string type = detectorElement->FirstChildElement("type")->GetText();
+		if (utils::equals(type, "HOGObjectDetector")) {
+			config.objectDetectors.push_back(new HOGObjectDetector());
+		} else if (utils::equals(type, "LatentSVMObjectDetector")){
+			string model = detectorElement->FirstChildElement("model")->GetText();
+			config.objectDetectors.push_back(new LatentSVMObjectDetector(model));
+
+		}
+		detectorElement = detectorElement->NextSiblingElement("detector");
+	}
 
 	return config;
 }

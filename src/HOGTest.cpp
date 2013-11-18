@@ -72,9 +72,7 @@ int main(int argc, char** argv) {
 
 	Config config = readConfigFile(argv[1]);
 	PascalAnnotationFileParser parser;
-	vector<ObjectDetector *> detectors;
-	detectors.push_back(new HOGObjectDetector());
-	detectors.push_back(new LatentSVMObjectDetector(config.detectionLatentSVMModel));
+	vector<ObjectDetector *> detectors = config.objectDetectors;
 	vector<Evaluation> evaluations(detectors.size());
 
 	vector<string> files;

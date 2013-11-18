@@ -12,6 +12,7 @@
 #include <map>
 #include "utils.h"
 #include "tinyxml2.h"
+#include "ObjectDetector.h"
 
 using namespace std;
 using namespace tinyxml2;
@@ -27,7 +28,7 @@ struct Config {
 	string fileExtension;
 	string imageDirectory;
 	string imageAnnotationsDirectory;
-	string detectionLatentSVMModel;
+	vector<ObjectDetector *> objectDetectors;
 };
 
 Config readConfigFile(char* configFile);

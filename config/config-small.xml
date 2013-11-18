@@ -5,7 +5,13 @@
 		<directory>/sb/peopleDetectionComparison/resources</directory>
 		<annotationsDirectory>/sb/peopleDetectionComparison/resources</annotationsDirectory>
 	</image>
-	<detection>
-		<latentSVMModeL>/sb/peopleDetectionComparison/resources/latentSVMModels/person.xml</latentSVMModeL>
-	</detection>
+	<detectors>
+		<detector>
+			<type>HOGObjectDetector</type>
+		</detector>
+		<detector>
+			<type>LatentSVMObjectDetector</type>
+			<model>/sb/peopleDetectionComparison/resources/latentSVMModels/person.xml</model>
+		</detector>
+	</detectors>
 </config>
