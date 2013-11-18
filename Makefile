@@ -16,7 +16,7 @@ USE_FILES := $(filter-out $(EXECUTABLE_FILES),$(ALL_CPP_FILES))
 OBJ_FILES = $(patsubst ${SOURCE_DIR}/%.cpp,${OBJ_DIR}/%.o,$(USE_FILES))
 
 
-all: init imglib HOGTest
+all: init imglib HOGTest LatentSVMTest
 
 .SECONDARY:
 

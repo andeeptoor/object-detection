@@ -10,6 +10,7 @@
 #include "common.h"
 #include "math.h"
 #include "PascalAnnotationFileParser.h"
+#include "ObjectDetector.h"
 
 using namespace cv;
 using namespace std;
@@ -19,33 +20,6 @@ struct Evaluation {
 	int incorrectObjects;
 	int totalObjects;
 };
-
-vector<Rect> findObjects(const HOGDescriptor hog, const Mat image) {
-	vector<Rect> found, foundFiltered;
-	int i, j;
-	Rect r;
-
-	fflush(stdout);
-	double t = (double) getTickCount();
-	// run the detector with default parameters. to get a higher hit-rate
-	// (and more false alarms, respectively), decrease the hitThreshold and
-	// groupThreshold (set groupThreshold to 0 to turn off the grouping completely).
-	hog.detectMultiScale(image, found, 0, Size(8, 8), Size(32, 32), 1.05, 2);
-	t = (double) getTickCount() - t;
-	printf("\tDetection time = %gms\n", t * 1000. / cv::getTickFrequency());
-	for (i = 0; i < found.size(); i++) {
-		r = found[i];
-		for (j = 0; j < found.size(); j++) {
-			if (j != i && (r & found[j]) == r) {
-				break;
-			}
-		}
-		if (j == found.size()) {
-			foundFiltered.push_back(r);
-		}
-	}
-	return foundFiltered;
-}
 
 Rect unionOf(Rect r1, Rect r2) {
 	int x1 = min(r1.x, r2.x);
@@ -84,6 +58,8 @@ void evaluatePredictions(Evaluation &evaluation, const AnnotatedImage annotatedI
 			} else {
 				evaluation.incorrectObjects++;
 			}
+		} else {
+				evaluation.incorrectObjects++;
 		}
 	}
 }
@@ -97,8 +73,7 @@ int main(int argc, char** argv) {
 	Config config = readConfigFile(argv[1]);
 	PascalAnnotationFileParser parser;
 
-	HOGDescriptor hog;
-	hog.setSVMDetector(HOGDescriptor::getDefaultPeopleDetector());
+	ObjectDetector * detector = new HOGObjectDetector();
 	namedWindow("people detector", 1);
 
 	vector<string> files;
@@ -126,12 +101,13 @@ int main(int argc, char** argv) {
 			continue;
 		}
 
-		vector<Rect> predictedObjects = findObjects(hog, image);
+		vector<Rect> predictedObjects = detector->detectObjects(image);
 		evaluatePredictions(evaluation, annotatedImage, predictedObjects);
 	}
 
 	printf("Evaluation:\n");
-	printf("\tPercent correct:%f%%\n", double(evaluation.correctObjects) / double(evaluation.totalObjects) * 100.0);
+	printf("\tTrue detection rate:%f%%\n", double(evaluation.correctObjects) / double(evaluation.totalObjects) * 100.0);
+	printf("\tFalse alarm rate:%f%%\n", double(evaluation.incorrectObjects) / double(files.size()) * 100.0);
 	printf("\tNumber correct:%d\n", evaluation.correctObjects);
 	printf("\tNumber incorrect:%d\n", evaluation.incorrectObjects);
 	printf("\tTotal objects:%d\n", evaluation.totalObjects);
