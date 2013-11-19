@@ -15,5 +15,9 @@
 			<overlapThreshold>0.2</overlapThreshold>
 			<numberOfThreads>3</numberOfThreads>
 		</detector>
+		<detector>
+			<type>HaarCascadeObjectDetector</type>
+			<model>/sb/peopleDetectionComparison/resources/haarCascadeModels/haarcascade_fullbody.xml</model>
+		</detector>
 	</detectors>
 </config>

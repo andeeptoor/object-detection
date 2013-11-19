@@ -72,3 +72,25 @@ vector<Rect> LatentSVMObjectDetector::detectObjects(Mat image) {
 	}
 	return foundFiltered;
 }
+
+HaarCascadeObjectDetector::HaarCascadeObjectDetector(string model) {
+	DetectionBasedTracker::Parameters param;
+//	param.maxObjectSize = 400;
+//	param.maxTrackLifetime = 20;
+//	param.minDetectionPeriod = 7;
+//	param.minNeighbors = 3;
+//	param.minObjectSize = 20;
+//	param.scaleFactor = 1.1;
+	detector = new DetectionBasedTracker(model, param);
+	detector->run();
+	printf("Detector: %s\n", name().c_str());
+}
+
+vector<Rect> HaarCascadeObjectDetector::detectObjects(Mat image) {
+	Mat gray;
+	cvtColor(image,gray,CV_RGB2GRAY);
+	detector->process(gray);
+	vector<Rect> found;
+	detector->getObjects(found);
+	return found;
+}

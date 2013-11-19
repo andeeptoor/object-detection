@@ -25,11 +25,14 @@ Config readConfigFile(char* configFile) {
 		string type = detectorElement->FirstChildElement("type")->GetText();
 		if (utils::equals(type, "HOGObjectDetector")) {
 			config.objectDetectors.push_back(new HOGObjectDetector());
-		} else if (utils::equals(type, "LatentSVMObjectDetector")){
+		} else if (utils::equals(type, "LatentSVMObjectDetector")) {
 			string model = detectorElement->FirstChildElement("model")->GetText();
 			double overlapThreshold = utils::stringToDouble(detectorElement->FirstChildElement("overlapThreshold")->GetText());
 			int numberOfThreads = utils::stringToInt(detectorElement->FirstChildElement("numberOfThreads")->GetText());
 			config.objectDetectors.push_back(new LatentSVMObjectDetector(model, overlapThreshold, numberOfThreads));
+		} else if (utils::equals(type, "HaarCascadeObjectDetector")) {
+			string model = detectorElement->FirstChildElement("model")->GetText();
+			config.objectDetectors.push_back(new HaarCascadeObjectDetector(model));
 		}
 		detectorElement = detectorElement->NextSiblingElement("detector");
 	}

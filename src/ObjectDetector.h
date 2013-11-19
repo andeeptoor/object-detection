@@ -10,6 +10,7 @@
 
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/objdetect/objdetect.hpp"
+#include "opencv2/contrib/detection_based_tracker.hpp"
 
 using namespace cv;
 
@@ -20,26 +21,41 @@ public:
 	virtual string name()=0;
 };
 
-class HOGObjectDetector : public ObjectDetector{
+class HOGObjectDetector: public ObjectDetector {
 
 public:
 	HOGObjectDetector();
 	vector<Rect> detectObjects(Mat image);
-	string name(){return "HOGObjectDetector";}
+	string name() {
+		return "HOGObjectDetector";
+	}
 private:
 	HOGDescriptor hog;
 };
 
-class LatentSVMObjectDetector : public ObjectDetector{
+class LatentSVMObjectDetector: public ObjectDetector {
 
 public:
 	LatentSVMObjectDetector(string model, double _overlapThreshold, int _numberOfThreads);
 	vector<Rect> detectObjects(Mat image);
-	string name(){return "LatentSVMObjectDetector";}
+	string name() {
+		return "LatentSVMObjectDetector";
+	}
 private:
 	LatentSvmDetector detector;
 	double overlapThreshold;
 	int numberOfThreads;
+};
+
+class HaarCascadeObjectDetector: public ObjectDetector {
+public:
+	HaarCascadeObjectDetector(string model);
+	vector<Rect> detectObjects(Mat image);
+	string name() {
+		return "HaarCascadeObjectDetector";
+	}
+private:
+	DetectionBasedTracker * detector;
 };
 
 #endif /* OBJECTDETECTOR_H_ */
