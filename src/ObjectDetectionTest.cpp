@@ -19,13 +19,13 @@ struct EvaluationImage {
 	int truePositive;
 	int falsePositive;
 	int numberOfPositives;
+	double recall;
+	double precision;
 };
 
 struct Evaluation {
 	vector<EvaluationImage> evaluations;
 	EvaluationImage total;
-	double recall;
-	double precision;
 	double averagePrecision;
 	double totalDetectionTime;
 };
@@ -76,6 +76,8 @@ void evaluatePredictions(Evaluation &evaluation, const AnnotatedImage annotatedI
 		}
 	}
 
+	current.recall = double(current.truePositive) / double(current.numberOfPositives);
+	current.precision = double(current.truePositive) / double(current.truePositive) + double(current.falsePositive);
 	evaluation.evaluations.push_back(current);
 	evaluation.total.falsePositive += current.falsePositive;
 	evaluation.total.truePositive += current.truePositive;
@@ -97,6 +99,8 @@ int main(int argc, char** argv) {
 		evaluations[i].total.falsePositive = 0;
 		evaluations[i].total.truePositive = 0;
 		evaluations[i].total.numberOfPositives = 0;
+		evaluations[i].total.precision = 0;
+		evaluations[i].total.recall = 0;
 	}
 	vector<string> files;
 	utils::recursivelySearchDirectoryForFiles(config.imageDirectory, config.fileExtension, &files);
@@ -135,14 +139,15 @@ int main(int argc, char** argv) {
 	}
 
 	for (i = 0; i < evaluations.size(); i++) {
-		evaluations[i].recall = double(evaluations[i].total.truePositive) / double(evaluations[i].total.numberOfPositives);
-		evaluations[i].precision = double(evaluations[i].total.truePositive) / double(evaluations[i].total.truePositive) + double(evaluations[i].total.falsePositive);
+		evaluations[i].total.recall = double(evaluations[i].total.truePositive) / double(evaluations[i].total.numberOfPositives);
+		evaluations[i].total.precision = double(evaluations[i].total.truePositive) / double(evaluations[i].total.truePositive)
+				+ double(evaluations[i].total.falsePositive);
 	}
 
 	for (i = 0; i < evaluations.size(); i++) {
 		printf("Evaluation %d: (%s)\n", i + 1, detectors[i]->name().c_str());
-		printf("\tOverall Recall:%f%%\n", evaluations[i].recall * 100.0);
-		printf("\tOverall Precision:%f%%\n", evaluations[i].precision * 100.0);
+		printf("\tOverall Recall:%f%%\n", evaluations[i].total.recall * 100.0);
+		printf("\tOverall Precision:%f%%\n", evaluations[i].total.precision * 100.0);
 		printf("\tNumber true positive:%d\n", evaluations[i].total.truePositive);
 		printf("\tNumber false positive:%d\n", evaluations[i].total.falsePositive);
 		printf("\tTotal positive:%d\n", evaluations[i].total.numberOfPositives);

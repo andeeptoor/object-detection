@@ -61,7 +61,6 @@ public:
 	}
 private:
 	DetectionBasedTracker * detector;
-	CvHaarClassifierCascade* cascade;
 };
 
 #endif /* OBJECTDETECTOR_H_ */
