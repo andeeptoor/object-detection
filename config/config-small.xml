@@ -2,19 +2,19 @@
 <config>
 	<image>
 		<fileExtension>png</fileExtension>
-		<directory>/sb/peopleDetectionComparison/resources</directory>
-		<annotationsDirectory>/sb/peopleDetectionComparison/resources</annotationsDirectory>
+		<directory>/sb/peopleDetectionComparison/resources/small</directory>
+		<annotationsDirectory>/sb/peopleDetectionComparison/resources/small</annotationsDirectory>
 	</image>
 	<detectors>
 		<detector>
 			<type>HOGObjectDetector</type>
 		</detector>
-		<!--detector>
+		<detector>
 			<type>LatentSVMObjectDetector</type>
 			<model>/sb/peopleDetectionComparison/resources/latentSVMModels/person.xml</model>
 			<overlapThreshold>0.2</overlapThreshold>
-			<numberOfThreads>3</numberOfThreads>
-		</detector-->
+			<numberOfThreads>5</numberOfThreads>
+		</detector>
 		<detector>
 			<type>HaarCascadeObjectDetector</type>
 			<model>/sb/peopleDetectionComparison/resources/haarCascadeModels/haarcascade_fullbody.xml</model>
