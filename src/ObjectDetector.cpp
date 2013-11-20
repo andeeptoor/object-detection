@@ -87,6 +87,9 @@ HaarCascadeObjectDetector::HaarCascadeObjectDetector(string model) {
 //	param.minNeighbors = 3;
 //	param.minObjectSize = 20;
 //	param.scaleFactor = 1.1;
+
+	cascade = cvLoadHaarClassifierCascade( model.c_str(), cvSize( 1, 1 ) );
+
 	detector = new DetectionBasedTracker(model, param);
 	detector->run();
 	printf("Detector: %s\n", name().c_str());

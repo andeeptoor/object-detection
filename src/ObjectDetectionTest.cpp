@@ -15,10 +15,15 @@
 using namespace cv;
 using namespace std;
 
-struct Evaluation {
+struct EvaluationImage {
 	int truePositive;
 	int falsePositive;
 	int numberOfPositives;
+};
+
+struct Evaluation {
+	vector<EvaluationImage> evaluations;
+	EvaluationImage total;
 	double recall;
 	double precision;
 	double averagePrecision;
@@ -38,7 +43,11 @@ void evaluatePredictions(Evaluation &evaluation, const AnnotatedImage annotatedI
 	double bestOverlap, currentOverlap;
 	vector<bool> found(annotatedImage.objects.size(), false);
 	int bestObject;
-	evaluation.numberOfPositives += annotatedImage.objects.size();
+	EvaluationImage current;
+	current.numberOfPositives = 0;
+	current.falsePositive = 0;
+	current.truePositive = 0;
+	current.numberOfPositives += annotatedImage.objects.size();
 	for (int predictedIndex = 0; predictedIndex < predictedObjects.size(); predictedIndex++) {
 		predicted = predictedObjects[predictedIndex].boundingBox;
 		bestOverlap = 0;
@@ -57,15 +66,20 @@ void evaluatePredictions(Evaluation &evaluation, const AnnotatedImage annotatedI
 
 		if (bestOverlap > 0) {
 			if (!found[bestObject]) {
-				evaluation.truePositive++;
+				current.truePositive++;
 				found[bestObject] = true;
 			} else {
-				evaluation.falsePositive++;
+				current.falsePositive++;
 			}
 		} else {
-			evaluation.falsePositive++;
+			current.falsePositive++;
 		}
 	}
+
+	evaluation.evaluations.push_back(current);
+	evaluation.total.falsePositive += current.falsePositive;
+	evaluation.total.truePositive += current.truePositive;
+	evaluation.total.numberOfPositives += current.numberOfPositives;
 }
 
 int main(int argc, char** argv) {
@@ -78,13 +92,17 @@ int main(int argc, char** argv) {
 	PascalAnnotationFileParser parser;
 	vector<ObjectDetector *> detectors = config.objectDetectors;
 	vector<Evaluation> evaluations(detectors.size());
-
+	int i;
+	for (i = 0; i < evaluations.size(); i++) {
+		evaluations[i].total.falsePositive = 0;
+		evaluations[i].total.truePositive = 0;
+		evaluations[i].total.numberOfPositives = 0;
+	}
 	vector<string> files;
 	utils::recursivelySearchDirectoryForFiles(config.imageDirectory, config.fileExtension, &files);
 
 	Mat image;
 	string filename;
-	int i;
 	for (int f = 0; f < files.size(); f++) {
 		filename = files[f];
 
@@ -105,30 +123,30 @@ int main(int argc, char** argv) {
 		}
 
 		for (i = 0; i < detectors.size(); i++) {
-			printf("\tDetector %s\n",detectors[i]->name().c_str());
+			printf("\tDetector %s\n", detectors[i]->name().c_str());
 			TickMeter tm;
 			tm.start();
 			vector<DetectedObject> predictedObjects = detectors[i]->detectObjects(image);
 			tm.stop();
-			printf("\t\tDetection time = %f sec\n",tm.getTimeSec());
-			evaluations[i].totalDetectionTime+=tm.getTimeSec();
+			printf("\t\tDetection time = %f sec\n", tm.getTimeSec());
+			evaluations[i].totalDetectionTime += tm.getTimeSec();
 			evaluatePredictions(evaluations[i], annotatedImage, predictedObjects);
 		}
 	}
 
 	for (i = 0; i < evaluations.size(); i++) {
-		evaluations[i].recall = double(evaluations[i].truePositive) / double(evaluations[i].numberOfPositives);
-		evaluations[i].precision = double(evaluations[i].truePositive) / double(evaluations[i].truePositive) + double(evaluations[i].falsePositive);
+		evaluations[i].recall = double(evaluations[i].total.truePositive) / double(evaluations[i].total.numberOfPositives);
+		evaluations[i].precision = double(evaluations[i].total.truePositive) / double(evaluations[i].total.truePositive) + double(evaluations[i].total.falsePositive);
 	}
 
 	for (i = 0; i < evaluations.size(); i++) {
-		printf("Evaluation %d: (%s)\n", i+1, detectors[i]->name().c_str());
-		printf("\tRecall:%f%%\n", evaluations[i].recall * 100.0);
-		printf("\tPrecision:%f%%\n", evaluations[i].precision * 100.0);
-		printf("\tNumber true positive:%d\n", evaluations[i].truePositive);
-		printf("\tNumber false positive:%d\n", evaluations[i].falsePositive);
-		printf("\tTotal positive:%d\n", evaluations[i].numberOfPositives);
-		printf("\tTotal detection time = %f sec\n",evaluations[i].totalDetectionTime);
+		printf("Evaluation %d: (%s)\n", i + 1, detectors[i]->name().c_str());
+		printf("\tOverall Recall:%f%%\n", evaluations[i].recall * 100.0);
+		printf("\tOverall Precision:%f%%\n", evaluations[i].precision * 100.0);
+		printf("\tNumber true positive:%d\n", evaluations[i].total.truePositive);
+		printf("\tNumber false positive:%d\n", evaluations[i].total.falsePositive);
+		printf("\tTotal positive:%d\n", evaluations[i].total.numberOfPositives);
+		printf("\tTotal detection time = %f sec\n", evaluations[i].totalDetectionTime);
 	}
 	return EXIT_SUCCESS;
 }
