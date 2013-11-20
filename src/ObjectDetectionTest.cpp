@@ -80,7 +80,7 @@ void evaluatePredictions(Evaluation &evaluation, const AnnotatedImage annotatedI
 
 	current.recall = double(current.truePositive) / double(current.numberOfPositives);
 	if (current.truePositive > 0 || current.falsePositive > 0) {
-		current.precision = double(current.truePositive) / double(current.truePositive) + double(current.falsePositive);
+		current.precision = double(current.truePositive) / (double(current.truePositive) + double(current.falsePositive));
 	}
 	evaluation.evaluations.push_back(current);
 	evaluation.total.falsePositive += current.falsePositive;
@@ -193,8 +193,8 @@ int main(int argc, char** argv) {
 	for (i = 0; i < evaluations.size(); i++) {
 		evaluations[i].total.recall = double(evaluations[i].total.truePositive) / double(evaluations[i].total.numberOfPositives);
 		if (evaluations[i].total.truePositive > 0 || evaluations[i].total.falsePositive > 0) {
-			evaluations[i].total.precision = double(evaluations[i].total.truePositive) / double(evaluations[i].total.truePositive)
-					+ double(evaluations[i].total.falsePositive);
+			evaluations[i].total.precision = double(evaluations[i].total.truePositive) / (double(evaluations[i].total.truePositive)
+					+ double(evaluations[i].total.falsePositive));
 		}
 		evaluations[i].averagePrecision = calculateAveragePrecision(evaluations[i]);
 	}
