@@ -16,9 +16,12 @@ using namespace cv;
 using namespace std;
 
 struct Evaluation {
-	int correctObjects;
-	int incorrectObjects;
-	int totalObjects;
+	int truePositive;
+	int falsePositive;
+	int numberOfPositives;
+	double recall;
+	double precision;
+	double averagePrecision;
 	double totalDetectionTime;
 };
 
@@ -30,14 +33,14 @@ Rect unionOf(Rect r1, Rect r2) {
 	return Rect(x1, y1, x2 - x1, y2 - y1);
 }
 
-void evaluatePredictions(Evaluation &evaluation, const AnnotatedImage annotatedImage, const vector<Rect> predictedObjects) {
+void evaluatePredictions(Evaluation &evaluation, const AnnotatedImage annotatedImage, const vector<DetectedObject> predictedObjects) {
 	Rect actual, predicted, intersection, unionRect;
 	double bestOverlap, currentOverlap;
 	vector<bool> found(annotatedImage.objects.size(), false);
 	int bestObject;
-	evaluation.totalObjects += annotatedImage.objects.size();
+	evaluation.numberOfPositives += annotatedImage.objects.size();
 	for (int predictedIndex = 0; predictedIndex < predictedObjects.size(); predictedIndex++) {
-		predicted = predictedObjects[predictedIndex];
+		predicted = predictedObjects[predictedIndex].boundingBox;
 		bestOverlap = 0;
 		currentOverlap = 0;
 		for (int actualIndex = 0; actualIndex < annotatedImage.objects.size(); actualIndex++) {
@@ -54,13 +57,13 @@ void evaluatePredictions(Evaluation &evaluation, const AnnotatedImage annotatedI
 
 		if (bestOverlap > 0) {
 			if (!found[bestObject]) {
-				evaluation.correctObjects++;
+				evaluation.truePositive++;
 				found[bestObject] = true;
 			} else {
-				evaluation.incorrectObjects++;
+				evaluation.falsePositive++;
 			}
 		} else {
-			evaluation.incorrectObjects++;
+			evaluation.falsePositive++;
 		}
 	}
 }
@@ -105,7 +108,7 @@ int main(int argc, char** argv) {
 			printf("\tDetector %s\n",detectors[i]->name().c_str());
 			TickMeter tm;
 			tm.start();
-			vector<Rect> predictedObjects = detectors[i]->detectObjects(image);
+			vector<DetectedObject> predictedObjects = detectors[i]->detectObjects(image);
 			tm.stop();
 			printf("\t\tDetection time = %f sec\n",tm.getTimeSec());
 			evaluations[i].totalDetectionTime+=tm.getTimeSec();
@@ -114,12 +117,17 @@ int main(int argc, char** argv) {
 	}
 
 	for (i = 0; i < evaluations.size(); i++) {
+		evaluations[i].recall = double(evaluations[i].truePositive) / double(evaluations[i].numberOfPositives);
+		evaluations[i].precision = double(evaluations[i].truePositive) / double(evaluations[i].truePositive) + double(evaluations[i].falsePositive);
+	}
+
+	for (i = 0; i < evaluations.size(); i++) {
 		printf("Evaluation %d: (%s)\n", i+1, detectors[i]->name().c_str());
-		printf("\tTrue detection rate:%f%%\n", double(evaluations[i].correctObjects) / double(evaluations[i].totalObjects) * 100.0);
-		printf("\tFalse alarm rate:%f%%\n", double(evaluations[i].incorrectObjects) / double(files.size()) * 100.0);
-		printf("\tNumber correct:%d\n", evaluations[i].correctObjects);
-		printf("\tNumber incorrect:%d\n", evaluations[i].incorrectObjects);
-		printf("\tTotal objects:%d\n", evaluations[i].totalObjects);
+		printf("\tRecall:%f%%\n", evaluations[i].recall * 100.0);
+		printf("\tPrecision:%f%%\n", evaluations[i].precision * 100.0);
+		printf("\tNumber true positive:%d\n", evaluations[i].truePositive);
+		printf("\tNumber false positive:%d\n", evaluations[i].falsePositive);
+		printf("\tTotal positive:%d\n", evaluations[i].numberOfPositives);
 		printf("\tTotal detection time = %f sec\n",evaluations[i].totalDetectionTime);
 	}
 	return EXIT_SUCCESS;

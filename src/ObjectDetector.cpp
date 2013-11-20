@@ -16,8 +16,9 @@ HOGObjectDetector::HOGObjectDetector() {
 	hog.setSVMDetector(HOGDescriptor::getDefaultPeopleDetector());
 }
 
-vector<Rect> HOGObjectDetector::detectObjects(Mat image) {
-	vector<Rect> found, foundFiltered;
+vector<DetectedObject> HOGObjectDetector::detectObjects(Mat image) {
+	vector<Rect> found;
+	vector<DetectedObject> foundFiltered;
 	int i, j;
 	Rect r;
 
@@ -25,7 +26,7 @@ vector<Rect> HOGObjectDetector::detectObjects(Mat image) {
 	// run the detector with default parameters. to get a higher hit-rate
 	// (and more false alarms, respectively), decrease the hitThreshold and
 	// groupThreshold (set groupThreshold to 0 to turn off the grouping completely).
-	hog.detectMultiScale(image, found, 0, Size(8, 8), Size(32, 32), 1.05, 2);
+	hog.detectMultiScale(image, found, 0.5, Size(8, 8), Size(32, 32), 1.05, 2);
 	for (i = 0; i < found.size(); i++) {
 		r = found[i];
 		for (j = 0; j < found.size(); j++) {
@@ -34,7 +35,9 @@ vector<Rect> HOGObjectDetector::detectObjects(Mat image) {
 			}
 		}
 		if (j == found.size()) {
-			foundFiltered.push_back(r);
+			DetectedObject o;
+			o.boundingBox = r;
+			foundFiltered.push_back(o);
 		}
 	}
 	return foundFiltered;
@@ -61,14 +64,17 @@ LatentSVMObjectDetector::LatentSVMObjectDetector(string model, double _overlapTh
 	}
 }
 
-vector<Rect> LatentSVMObjectDetector::detectObjects(Mat image) {
-	vector<Rect> foundFiltered;
+vector<DetectedObject> LatentSVMObjectDetector::detectObjects(Mat image) {
+	vector<DetectedObject> foundFiltered;
 
 	vector<LatentSvmDetector::ObjectDetection> detections;
 	detector.detect(image, detections, overlapThreshold, numberOfThreads);
-	for (size_t i = 0; i < detections.size(); i++) {
+	for (int i = 0; i < detections.size(); i++) {
 		const LatentSvmDetector::ObjectDetection& od = detections[i];
-		foundFiltered.push_back(od.rect);
+		DetectedObject o;
+		o.boundingBox = od.rect;
+		o.confidenceLevel = od.score;
+		foundFiltered.push_back(o);
 	}
 	return foundFiltered;
 }
@@ -86,11 +92,17 @@ HaarCascadeObjectDetector::HaarCascadeObjectDetector(string model) {
 	printf("Detector: %s\n", name().c_str());
 }
 
-vector<Rect> HaarCascadeObjectDetector::detectObjects(Mat image) {
+vector<DetectedObject> HaarCascadeObjectDetector::detectObjects(Mat image) {
 	Mat gray;
 	cvtColor(image,gray,CV_RGB2GRAY);
 	detector->process(gray);
 	vector<Rect> found;
 	detector->getObjects(found);
-	return found;
+	vector<DetectedObject> objects;
+	for (int i = 0; i < found.size(); i++) {
+		DetectedObject o;
+		o.boundingBox = found[i];
+		objects.push_back(o);
+	}
+	return objects;
 }

@@ -14,10 +14,15 @@
 
 using namespace cv;
 
+struct DetectedObject{
+	Rect boundingBox;
+	double confidenceLevel;
+};
+
 class ObjectDetector {
 public:
 	virtual ~ObjectDetector();
-	virtual vector<Rect> detectObjects(Mat image)=0;
+	virtual vector<DetectedObject> detectObjects(Mat image)=0;
 	virtual string name()=0;
 };
 
@@ -25,7 +30,7 @@ class HOGObjectDetector: public ObjectDetector {
 
 public:
 	HOGObjectDetector();
-	vector<Rect> detectObjects(Mat image);
+	vector<DetectedObject> detectObjects(Mat image);
 	string name() {
 		return "HOGObjectDetector";
 	}
@@ -37,7 +42,7 @@ class LatentSVMObjectDetector: public ObjectDetector {
 
 public:
 	LatentSVMObjectDetector(string model, double _overlapThreshold, int _numberOfThreads);
-	vector<Rect> detectObjects(Mat image);
+	vector<DetectedObject> detectObjects(Mat image);
 	string name() {
 		return "LatentSVMObjectDetector";
 	}
@@ -50,7 +55,7 @@ private:
 class HaarCascadeObjectDetector: public ObjectDetector {
 public:
 	HaarCascadeObjectDetector(string model);
-	vector<Rect> detectObjects(Mat image);
+	vector<DetectedObject> detectObjects(Mat image);
 	string name() {
 		return "HaarCascadeObjectDetector";
 	}
