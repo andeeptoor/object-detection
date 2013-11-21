@@ -6,6 +6,7 @@
  */
 
 #include "ObjectDetector.h"
+#include "utils.h"
 
 ObjectDetector::~ObjectDetector() {
 
@@ -79,7 +80,7 @@ vector<DetectedObject> LatentSVMObjectDetector::detectObjects(Mat image) {
 	return foundFiltered;
 }
 
-HaarCascadeObjectDetector::HaarCascadeObjectDetector(string model) {
+CascadeObjectDetector::CascadeObjectDetector(string _model) {
 	DetectionBasedTracker::Parameters param;
 //	param.maxObjectSize = 400;
 //	param.maxTrackLifetime = 20;
@@ -88,12 +89,14 @@ HaarCascadeObjectDetector::HaarCascadeObjectDetector(string model) {
 //	param.minObjectSize = 20;
 //	param.scaleFactor = 1.1;
 
-	detector = new DetectionBasedTracker(model, param);
+	detector = new DetectionBasedTracker(_model, param);
 	detector->run();
+	string fileWithoutParentDirectory = utils::getFileWithoutParentDirectory(_model);
+	this->nameAndModel = utils::append(utils::append("HaarCascadeObjectDetector [", fileWithoutParentDirectory), "]");
 	printf("Detector: %s\n", name().c_str());
 }
 
-vector<DetectedObject> HaarCascadeObjectDetector::detectObjects(Mat image) {
+vector<DetectedObject> CascadeObjectDetector::detectObjects(Mat image) {
 	Mat gray;
 	cvtColor(image,gray,CV_RGB2GRAY);
 	detector->process(gray);

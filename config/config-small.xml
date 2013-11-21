@@ -9,15 +9,19 @@
 		<detector>
 			<type>HOGObjectDetector</type>
 		</detector>
-		<detector>
+		<!--detector>
 			<type>LatentSVMObjectDetector</type>
 			<model>/sb/peopleDetectionComparison/resources/latentSVMModels/person.xml</model>
 			<overlapThreshold>0.2</overlapThreshold>
 			<numberOfThreads>5</numberOfThreads>
-		</detector>
+		</detector-->
 		<detector>
 			<type>HaarCascadeObjectDetector</type>
 			<model>/sb/peopleDetectionComparison/resources/haarCascadeModels/haarcascade_fullbody.xml</model>
+		</detector>
+		<detector>
+			<type>HaarCascadeObjectDetector</type>
+			<model>/sb/peopleDetectionComparison/resources/hogCascadeModels/hogcascade_pedestrians.xml</model>
 		</detector>
 	</detectors>
 </config>

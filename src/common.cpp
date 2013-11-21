@@ -30,9 +30,9 @@ Config readConfigFile(char* configFile) {
 			double overlapThreshold = utils::stringToDouble(detectorElement->FirstChildElement("overlapThreshold")->GetText());
 			int numberOfThreads = utils::stringToInt(detectorElement->FirstChildElement("numberOfThreads")->GetText());
 			config.objectDetectors.push_back(new LatentSVMObjectDetector(model, overlapThreshold, numberOfThreads));
-		} else if (utils::equals(type, "HaarCascadeObjectDetector")) {
+		} else if (utils::equals(type, "CascadeObjectDetector")) {
 			string model = detectorElement->FirstChildElement("model")->GetText();
-			config.objectDetectors.push_back(new HaarCascadeObjectDetector(model));
+			config.objectDetectors.push_back(new CascadeObjectDetector(model));
 		}
 		detectorElement = detectorElement->NextSiblingElement("detector");
 	}

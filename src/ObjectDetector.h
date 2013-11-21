@@ -52,15 +52,16 @@ private:
 	int numberOfThreads;
 };
 
-class HaarCascadeObjectDetector: public ObjectDetector {
+class CascadeObjectDetector: public ObjectDetector {
 public:
-	HaarCascadeObjectDetector(string model);
+	CascadeObjectDetector(string _model);
 	vector<DetectedObject> detectObjects(Mat image);
 	string name() {
-		return "HaarCascadeObjectDetector";
+		return this->nameAndModel;
 	}
 private:
 	DetectionBasedTracker * detector;
+	string nameAndModel;
 };
 
 #endif /* OBJECTDETECTOR_H_ */

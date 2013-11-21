@@ -95,6 +95,7 @@ bool sortRecallAscending(const EvaluationImage& l, const EvaluationImage& r) {
 double calculateAveragePrecision(Evaluation eval) {
 	vector<double> recall;
 	vector<double> precision;
+	int i;
 
 	recall.push_back(0);
 	precision.push_back(0);
@@ -103,37 +104,44 @@ double calculateAveragePrecision(Evaluation eval) {
 
 	vector<EvaluationImage> evals = eval.evaluations;
 
-	for (int e = 0; e < evals.size(); e++) {
-		printf("Original Recall: [%f] Precision: [%f]\n", evals[e].recall, evals[e].precision);
-	}
-
 	sort(evals.begin(), evals.end(), sortRecallAscending);
 
-	for (int e = 0; e < evals.size(); e++) {
-		printf("Sorted Recall: [%f] Precision: [%f]\n", evals[e].recall, evals[e].precision);
-
-		recall.push_back(evals[e].recall);
-		precision.push_back(evals[e].precision);
+	for (i = 0; i < evals.size(); i++) {
+		recall.push_back(evals[i].recall);
+		precision.push_back(evals[i].precision);
 	}
 
 	recall.push_back(1);
 	precision.push_back(0);
 
-	for (int i = precision.size() - 1; i >= 0; i--) {
+	for (i = precision.size() - 1; i >= 0; i--) {
 		precision[i] = max(precision[i], precision[i + 1]);
 	}
 
-	for (int i = 0; i < precision.size(); ++i) {
-		printf("Recall: [%f] Precision: [%f]\n", recall[i], precision[i]);
+	vector<int> indices;
+
+	double previous = recall[0];
+	for (i = 1; i < recall.size(); i++) {
+		if (recall[i] != previous) {
+			indices.push_back(i+1);
+			previous = recall[i];
+			printf("Recall: [%f]\n", recall[i]);
+		}
 	}
 
+	double averagePrecision = 0;
+	int index;
+	for (i = 0; i < indices.size(); i++) {
+		index = indices[i];
+		averagePrecision += ((recall[index] - recall[index-1]) * precision[index]);
+	}
 	printf("\n");
 	/*
 	 * i=find(mrec(2:end)~=mrec(1:end-1))+1;
 	 ap=sum((mrec(i)-mrec(i-1)).*mpre(i));
 	 */
 
-	return 0;
+	return averagePrecision;
 }
 
 int main(int argc, char** argv) {
@@ -193,8 +201,8 @@ int main(int argc, char** argv) {
 	for (i = 0; i < evaluations.size(); i++) {
 		evaluations[i].total.recall = double(evaluations[i].total.truePositive) / double(evaluations[i].total.numberOfPositives);
 		if (evaluations[i].total.truePositive > 0 || evaluations[i].total.falsePositive > 0) {
-			evaluations[i].total.precision = double(evaluations[i].total.truePositive) / (double(evaluations[i].total.truePositive)
-					+ double(evaluations[i].total.falsePositive));
+			evaluations[i].total.precision = double(evaluations[i].total.truePositive)
+					/ (double(evaluations[i].total.truePositive) + double(evaluations[i].total.falsePositive));
 		}
 		evaluations[i].averagePrecision = calculateAveragePrecision(evaluations[i]);
 	}
@@ -203,6 +211,7 @@ int main(int argc, char** argv) {
 		printf("Evaluation %d: (%s)\n", i + 1, detectors[i]->name().c_str());
 		printf("\tOverall Recall:%f%%\n", evaluations[i].total.recall * 100.0);
 		printf("\tOverall Precision:%f%%\n", evaluations[i].total.precision * 100.0);
+		printf("\tAverage Precision:%f%%\n", evaluations[i].averagePrecision * 100.0);
 		printf("\tNumber true positive:%d\n", evaluations[i].total.truePositive);
 		printf("\tNumber false positive:%d\n", evaluations[i].total.falsePositive);
 		printf("\tTotal positive:%d\n", evaluations[i].total.numberOfPositives);

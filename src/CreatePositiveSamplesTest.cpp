@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
 	vector<string> files;
 	utils::recursivelySearchDirectoryForFiles(config.imageDirectory, config.fileExtension, &files);
 
-	const string outputFileName = utils::prepend(utils::getParentDirectory(config.imageDirectory), "/samples.txt");
+	const string outputFileName = utils::append(utils::getParentDirectory(config.imageDirectory), "/samples.txt");
 	ofstream outputFile(outputFileName.c_str());
 	if (!outputFile.is_open()) {
 		printf("Cannot open data file [%s]\n", outputFileName.c_str());

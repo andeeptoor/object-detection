@@ -51,7 +51,7 @@ double stringToDouble(string arg) {
 	return stringToDouble((char *) arg.c_str());
 }
 
-string prepend(string one, string two){
+string append(string one, string two){
 	stringstream stream1;
 	stream1 << one << two;
 	return stream1.str();
