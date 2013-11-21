@@ -92,7 +92,7 @@ CascadeObjectDetector::CascadeObjectDetector(string _model) {
 	detector = new DetectionBasedTracker(_model, param);
 	detector->run();
 	string fileWithoutParentDirectory = utils::getFileWithoutParentDirectory(_model);
-	this->nameAndModel = utils::append(utils::append("HaarCascadeObjectDetector [", fileWithoutParentDirectory), "]");
+	this->nameAndModel = utils::append(utils::append("CascadeObjectDetector [", fileWithoutParentDirectory), "]");
 	printf("Detector: %s\n", name().c_str());
 }
 

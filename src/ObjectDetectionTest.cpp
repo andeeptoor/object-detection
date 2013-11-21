@@ -78,7 +78,9 @@ void evaluatePredictions(Evaluation &evaluation, const AnnotatedImage annotatedI
 		}
 	}
 
-	current.recall = double(current.truePositive) / double(current.numberOfPositives);
+	if (current.numberOfPositives > 0) {
+		current.recall = double(current.truePositive) / double(current.numberOfPositives);
+	}
 	if (current.truePositive > 0 || current.falsePositive > 0) {
 		current.precision = double(current.truePositive) / (double(current.truePositive) + double(current.falsePositive));
 	}
@@ -109,13 +111,15 @@ double calculateAveragePrecision(Evaluation eval) {
 	for (i = 0; i < evals.size(); i++) {
 		recall.push_back(evals[i].recall);
 		precision.push_back(evals[i].precision);
+//		printf("Sorted Precision[%d]=[%f]\n", i, precision[i]);
 	}
 
 	recall.push_back(1);
 	precision.push_back(0);
 
-	for (i = precision.size() - 1; i >= 0; i--) {
+	for (i = precision.size() - 2; i >= 0; i--) {
 		precision[i] = max(precision[i], precision[i + 1]);
+//			printf("Precision[%d]=[%f]\n", i, precision[i]);
 	}
 
 	vector<int> indices;
@@ -123,7 +127,7 @@ double calculateAveragePrecision(Evaluation eval) {
 	double previous = recall[0];
 	for (i = 1; i < recall.size(); i++) {
 		if (recall[i] != previous) {
-			indices.push_back(i+1);
+			indices.push_back(i + 1);
 			previous = recall[i];
 			printf("Recall: [%f]\n", recall[i]);
 		}
@@ -133,7 +137,8 @@ double calculateAveragePrecision(Evaluation eval) {
 	int index;
 	for (i = 0; i < indices.size(); i++) {
 		index = indices[i];
-		averagePrecision += ((recall[index] - recall[index-1]) * precision[index]);
+		printf("Index=[%d] Recall[index]=[%f] Recall[index-1]=[%f] Precision[index]=[%f]\n", index, recall[index], recall[index - 1], precision[index]);
+		averagePrecision += ((recall[index] - recall[index - 1]) * precision[index]);
 	}
 	printf("\n");
 	/*
@@ -199,7 +204,9 @@ int main(int argc, char** argv) {
 	}
 
 	for (i = 0; i < evaluations.size(); i++) {
-		evaluations[i].total.recall = double(evaluations[i].total.truePositive) / double(evaluations[i].total.numberOfPositives);
+		if (evaluations[i].total.numberOfPositives > 0) {
+			evaluations[i].total.recall = double(evaluations[i].total.truePositive) / double(evaluations[i].total.numberOfPositives);
+		}
 		if (evaluations[i].total.truePositive > 0 || evaluations[i].total.falsePositive > 0) {
 			evaluations[i].total.precision = double(evaluations[i].total.truePositive)
 					/ (double(evaluations[i].total.truePositive) + double(evaluations[i].total.falsePositive));
