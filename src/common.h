@@ -27,11 +27,13 @@ struct TimeSeries {
 struct Config {
 	string fileExtension;
 	string imageDirectory;
+	string imageDirectoryFilterFile;
 	string imageAnnotationsDirectory;
 	vector<ObjectDetector *> objectDetectors;
 };
 
 XMLElement* getChild(const string& childName, XMLElement* parentElement) ;
+string getChildText(const string& childName, XMLElement* parentElement) ;
 Config readConfigFile(char* configFile);
 void showProgress(int index);
 void endProgress();

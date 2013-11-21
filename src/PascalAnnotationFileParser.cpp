@@ -39,9 +39,9 @@ AnnotatedImage PascalAnnotationFileParser::parseXmlAnnotationFile(string filenam
 	doc.LoadFile(filename.c_str());
 	XMLElement* annotationElement = doc.FirstChildElement("annotation");
 	XMLElement* sizeElement = getChild("size", annotationElement);
-	image.imageWidth = utils::stringToInt(sizeElement->FirstChildElement("width")->GetText());
-	image.imageHeight = utils::stringToInt(sizeElement->FirstChildElement("height")->GetText());
-	image.numberOfColors = utils::stringToInt(sizeElement->FirstChildElement("depth")->GetText());
+	image.imageWidth = utils::stringToInt(getChildText("width",sizeElement));
+	image.imageHeight = utils::stringToInt(getChildText("height",sizeElement));
+	image.numberOfColors = utils::stringToInt(getChildText("depth",sizeElement));
 
 	int x1, x2, y1, y2;
 	XMLElement * objectElement = annotationElement->FirstChildElement("object");
@@ -49,10 +49,10 @@ AnnotatedImage PascalAnnotationFileParser::parseXmlAnnotationFile(string filenam
 		AnnotatedObject a;
 		a.label = getChild("name", objectElement)->GetText();
 		XMLElement * boundingBox = getChild("bndbox", objectElement);
-		x1 = utils::stringToInt(getChild("xmin", boundingBox)->GetText());
-		x2 = utils::stringToInt(getChild("xmax", boundingBox)->GetText());
-		y1 = utils::stringToInt(getChild("ymin", boundingBox)->GetText());
-		y2 = utils::stringToInt(getChild("ymax", boundingBox)->GetText());
+		x1 = utils::stringToInt(getChildText("xmin", boundingBox));
+		x2 = utils::stringToInt(getChildText("xmax", boundingBox));
+		y1 = utils::stringToInt(getChildText("ymin", boundingBox));
+		y2 = utils::stringToInt(getChildText("ymax", boundingBox));
 
 		Rect r(Point(x1, y1), Point(x2, y2));
 		a.boundingBox = r;

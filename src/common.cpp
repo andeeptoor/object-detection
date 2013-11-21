@@ -11,10 +11,13 @@
 XMLElement* getChild(const string& childName, XMLElement* parentElement) {
 	XMLElement* childElement = parentElement->FirstChildElement(childName.c_str());
 	if (childElement == NULL) {
-		printf("ERROR: Element [%s] not found.", childName.c_str());
+		printf("ERROR: Element [%s->%s] not found.", parentElement->Name(), childName.c_str());
 		exit(EXIT_FAILURE);
 	}
 	return childElement;
+}
+string getChildText(const string& childName, XMLElement* parentElement) {
+	return getChild(childName, parentElement)->GetText();
 }
 
 Config readConfigFile(char* configFile) {
@@ -22,25 +25,29 @@ Config readConfigFile(char* configFile) {
 	XMLDocument doc;
 	doc.LoadFile(configFile);
 	XMLElement* configElement = doc.FirstChildElement("config");
-	XMLElement* imageElement = configElement->FirstChildElement("image");
-	config.fileExtension = imageElement->FirstChildElement("fileExtension")->GetText();
-	config.imageDirectory = imageElement->FirstChildElement("directory")->GetText();
-	config.imageAnnotationsDirectory = imageElement->FirstChildElement("annotationsDirectory")->GetText();
-	XMLElement* detectors = configElement->FirstChildElement("detectors");
+	XMLElement* imageElement = getChild("image", configElement);
+	config.fileExtension = getChildText("fileExtension", imageElement);
+	config.imageDirectory = getChildText("directory", imageElement);
+	XMLElement* directoryFilterFile = imageElement->FirstChildElement("directoryFilterFile");
+	if (directoryFilterFile != NULL) {
+		config.imageDirectoryFilterFile = directoryFilterFile->GetText();
+	}
+	config.imageAnnotationsDirectory = getChildText("annotationsDirectory", imageElement);
 
+	XMLElement* detectors = getChild("detectors", configElement);
 	XMLElement* detectorElement = detectors->FirstChildElement("detector");
 
 	while (detectorElement != NULL) {
-		string type = detectorElement->FirstChildElement("type")->GetText();
+		string type = getChildText("type", detectorElement);
 		if (utils::equals(type, "HOGObjectDetector")) {
 			config.objectDetectors.push_back(new HOGObjectDetector());
 		} else if (utils::equals(type, "LatentSVMObjectDetector")) {
-			string model = detectorElement->FirstChildElement("model")->GetText();
-			double overlapThreshold = utils::stringToDouble(detectorElement->FirstChildElement("overlapThreshold")->GetText());
-			int numberOfThreads = utils::stringToInt(detectorElement->FirstChildElement("numberOfThreads")->GetText());
+			string model = getChildText("model", detectorElement);
+			double overlapThreshold = utils::stringToDouble(getChildText("overlapThreshold", detectorElement));
+			int numberOfThreads = utils::stringToInt(getChildText("numberOfThreads", detectorElement));
 			config.objectDetectors.push_back(new LatentSVMObjectDetector(model, overlapThreshold, numberOfThreads));
 		} else if (utils::equals(type, "CascadeObjectDetector")) {
-			string model = detectorElement->FirstChildElement("model")->GetText();
+			string model = getChildText("model", detectorElement);
 			config.objectDetectors.push_back(new CascadeObjectDetector(model));
 		}
 		detectorElement = detectorElement->NextSiblingElement("detector");
