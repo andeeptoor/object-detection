@@ -6,8 +6,12 @@
  */
 
 #include "PascalAnnotationFileParser.h"
+#include "utils.h"
+#include "common.h"
 #include <fstream>
 #include <stdio.h>
+
+using namespace tinyxml2;
 
 PascalAnnotationFileParser::PascalAnnotationFileParser() {
 
@@ -17,6 +21,49 @@ PascalAnnotationFileParser::~PascalAnnotationFileParser() {
 }
 
 AnnotatedImage PascalAnnotationFileParser::parseAnnotationFile(string filename) {
+	if (utils::matchesFileExtension(filename, "txt")) {
+		return parseTextAnnotationFile(filename);
+	} else if (utils::matchesFileExtension(filename, "xml")) {
+		return parseXmlAnnotationFile(filename);
+	}
+
+	printf("Unknown file extension for annotation file [%s]", filename.c_str());
+	exit(EXIT_FAILURE);
+
+}
+
+AnnotatedImage PascalAnnotationFileParser::parseXmlAnnotationFile(string filename) {
+	AnnotatedImage image;
+
+	XMLDocument doc;
+	doc.LoadFile(filename.c_str());
+	XMLElement* annotationElement = doc.FirstChildElement("annotation");
+	XMLElement* sizeElement = getChild("size", annotationElement);
+	image.imageWidth = utils::stringToInt(sizeElement->FirstChildElement("width")->GetText());
+	image.imageHeight = utils::stringToInt(sizeElement->FirstChildElement("height")->GetText());
+	image.numberOfColors = utils::stringToInt(sizeElement->FirstChildElement("depth")->GetText());
+
+	int x1, x2, y1, y2;
+	XMLElement * objectElement = annotationElement->FirstChildElement("object");
+	while (objectElement != NULL) {
+		AnnotatedObject a;
+		a.label = getChild("name", objectElement)->GetText();
+		XMLElement * boundingBox = getChild("bndbox", objectElement);
+		x1 = utils::stringToInt(getChild("xmin", boundingBox)->GetText());
+		x2 = utils::stringToInt(getChild("xmax", boundingBox)->GetText());
+		y1 = utils::stringToInt(getChild("ymin", boundingBox)->GetText());
+		y2 = utils::stringToInt(getChild("ymax", boundingBox)->GetText());
+
+		Rect r(Point(x1, y1), Point(x2, y2));
+		a.boundingBox = r;
+
+		image.objects.push_back(a);
+		objectElement = annotationElement->NextSiblingElement("object");
+	}
+	return image;
+}
+
+AnnotatedImage PascalAnnotationFileParser::parseTextAnnotationFile(string filename) {
 	AnnotatedImage image;
 
 	string imageSizeString = "Image size (X x Y x C) : %d x %d x %d";
@@ -53,7 +100,7 @@ AnnotatedImage PascalAnnotationFileParser::parseAnnotationFile(string filename) 
 			image.objects[objectNumber - 1].centerPoint = Point(x1, y1);
 		} else if (line.substr(0, 20) == objectBoundingBoxString.substr(0, 20)) {
 			sscanf(line.c_str(), objectBoundingBoxString.c_str(), &objectNumber, &objectName, &x1, &y1, &x2, &y2);
-			Rect r(Point(x1,y1),Point(x2,y2));
+			Rect r(Point(x1, y1), Point(x2, y2));
 			image.objects[objectNumber - 1].boundingBox = r;
 		} else {
 //			printf("%s:\n", line.c_str());

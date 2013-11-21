@@ -31,6 +31,9 @@ public:
 	PascalAnnotationFileParser();
 	virtual ~PascalAnnotationFileParser();
 	AnnotatedImage parseAnnotationFile(string annotationFile);
+private:
+	AnnotatedImage parseTextAnnotationFile(string annotationFile);
+	AnnotatedImage parseXmlAnnotationFile(string annotationFile);
 };
 
 

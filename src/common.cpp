@@ -8,6 +8,15 @@
 #include "common.h"
 #include <iostream>
 
+XMLElement* getChild(const string& childName, XMLElement* parentElement) {
+	XMLElement* childElement = parentElement->FirstChildElement(childName.c_str());
+	if (childElement == NULL) {
+		printf("ERROR: Element [%s] not found.", childName.c_str());
+		exit(EXIT_FAILURE);
+	}
+	return childElement;
+}
+
 Config readConfigFile(char* configFile) {
 	Config config;
 	XMLDocument doc;

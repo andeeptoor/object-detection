@@ -87,7 +87,7 @@ CascadeObjectDetector::CascadeObjectDetector(string _model) {
 //	param.minDetectionPeriod = 7;
 //	param.minNeighbors = 3;
 //	param.minObjectSize = 20;
-//	param.scaleFactor = 1.1;
+	param.scaleFactor = 1.2;
 
 	detector = new DetectionBasedTracker(_model, param);
 	detector->run();

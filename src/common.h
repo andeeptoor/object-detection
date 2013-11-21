@@ -31,6 +31,7 @@ struct Config {
 	vector<ObjectDetector *> objectDetectors;
 };
 
+XMLElement* getChild(const string& childName, XMLElement* parentElement) ;
 Config readConfigFile(char* configFile);
 void showProgress(int index);
 void endProgress();
