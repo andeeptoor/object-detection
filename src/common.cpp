@@ -26,13 +26,15 @@ Config readConfigFile(char* configFile) {
 	doc.LoadFile(configFile);
 	XMLElement* configElement = doc.FirstChildElement("config");
 	XMLElement* imageElement = getChild("image", configElement);
-	config.fileExtension = getChildText("fileExtension", imageElement);
+	config.imageFileExtension = getChildText("fileExtension", imageElement);
 	config.imageDirectory = getChildText("directory", imageElement);
 	XMLElement* directoryFilterFile = imageElement->FirstChildElement("directoryFilterFile");
 	if (directoryFilterFile != NULL) {
 		config.imageDirectoryFilterFile = directoryFilterFile->GetText();
 	}
-	config.imageAnnotationsDirectory = getChildText("annotationsDirectory", imageElement);
+	XMLElement* annotationsElement = getChild("annotations", configElement);
+	config.annotationsDirectory = getChildText("directory", annotationsElement);
+	config.annotationsFileExtension = getChildText("fileExtension", annotationsElement);
 
 	XMLElement* detectors = getChild("detectors", configElement);
 	XMLElement* detectorElement = detectors->FirstChildElement("detector");

@@ -3,15 +3,10 @@
 	<image>
 		<fileExtension>png</fileExtension>
 		<directory>/sb/data/person/inria/INRIAPerson/Train/pos</directory>
-		<annotationsDirectory>/sb/data/person/inria/INRIAPerson/Train/annotations</annotationsDirectory>
 	</image>
-	<detectors>
-		<!--detector> <type>HOGObjectDetector</type> </detector -->
-		<!--detector> <type>LatentSVMObjectDetector</type> <model>/sb/peopleDetectionComparison/resources/latentSVMModels/person.xml</model> <overlapThreshold>0.2</overlapThreshold> <numberOfThreads>3</numberOfThreads> 
-			</detector -->
-		<detector>
-			<type>HaarCascadeObjectDetector</type>
-			<model>/sb/peopleDetectionComparison/resources/haarCascadeModels/haarcascade_fullbody.xml</model>
-		</detector>
-	</detectors>
+	<annotations>
+		<fileExtension>txt</fileExtension>
+		<directory>/sb/data/person/inria/INRIAPerson/Train/annotations</directory>
+	</annotations>
+	<detectors/>
 </config>

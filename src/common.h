@@ -25,10 +25,11 @@ struct TimeSeries {
 };
 
 struct Config {
-	string fileExtension;
+	string imageFileExtension;
 	string imageDirectory;
 	string imageDirectoryFilterFile;
-	string imageAnnotationsDirectory;
+	string annotationsDirectory;
+	string annotationsFileExtension;
 	vector<ObjectDetector *> objectDetectors;
 };
 

@@ -168,14 +168,14 @@ int main(int argc, char** argv) {
 		evaluations[i].total.recall = 0;
 	}
 	vector<string> files;
-	utils::recursivelySearchDirectoryForFiles(config.imageDirectory, config.fileExtension, &files);
+	utils::recursivelySearchDirectoryForFiles(config.imageDirectory, config.imageFileExtension, &files);
 
 	Mat image;
 	string filename;
 	for (int f = 0; f < files.size(); f++) {
 		filename = files[f];
 
-		string annotationFile = utils::convertToParentDirectory(filename, config.imageAnnotationsDirectory);
+		string annotationFile = utils::convertToParentDirectory(filename, config.annotationsDirectory);
 		annotationFile = utils::convertToFileExtension(annotationFile, "txt");
 		AnnotatedImage annotatedImage = parser.parseAnnotationFile(annotationFile);
 

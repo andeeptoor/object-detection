@@ -25,9 +25,10 @@ int main(int argc, char** argv) {
 	PascalAnnotationFileParser parser;
 
 	vector<string> files;
-	utils::recursivelySearchDirectoryForFiles(config.imageDirectory, config.fileExtension, &files);
+	utils::recursivelySearchDirectoryForFiles(config.imageDirectory, config.imageFileExtension, &files);
 
-	const string outputFileName = utils::append(utils::getParentDirectory(config.imageDirectory), "/samples.txt");
+	string name =  utils::append("/", utils::append(utils::getFileWithoutParentDirectory(config.imageDirectory), ".txt"));
+	const string outputFileName = utils::append(utils::getParentDirectory(config.imageDirectory), name);
 	ofstream outputFile(outputFileName.c_str());
 	if (!outputFile.is_open()) {
 		printf("Cannot open data file [%s]\n", outputFileName.c_str());
@@ -38,12 +39,14 @@ int main(int argc, char** argv) {
 	string filename;
 	int i;
 	for (int f = 0; f < files.size(); f++) {
+		showProgress(f);
 		filename = files[f];
-		string annotationFile = utils::convertToParentDirectory(filename, config.imageAnnotationsDirectory);
-		annotationFile = utils::convertToFileExtension(annotationFile, "txt");
+		string annotationFile = utils::convertToParentDirectory(filename, config.annotationsDirectory);
+		annotationFile = utils::convertToFileExtension(annotationFile, config.annotationsFileExtension);
 		AnnotatedImage annotatedImage = parser.parseAnnotationFile(annotationFile);
 
-		outputFile << " " << utils::getFileWithoutParentDirectory(filename) << "  " << annotatedImage.objects.size();
+		outputFile << utils::getParentDirectory(filename) << "/" << utils::getFileWithoutParentDirectory(filename);
+		outputFile << "  " << annotatedImage.objects.size();
 		for (i = 0; i < annotatedImage.objects.size(); i++) {
 			outputFile << "  ";
 			outputFile << annotatedImage.objects[i].boundingBox.x << " ";
@@ -53,6 +56,7 @@ int main(int argc, char** argv) {
 		}
 		outputFile << "\n";
 	}
+	endProgress();
 	outputFile.close();
 	return EXIT_SUCCESS;
 }
