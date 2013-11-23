@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<config>
+	<image>
+		<fileExtension>png</fileExtension>
+		<directory>/sb/data/person/inria/INRIAPerson/Test/pos</directory>
+	</image>
+	<annotations>
+		<fileExtension>txt</fileExtension>
+		<directory>/sb/data/person/inria/INRIAPerson/Test/annotations</directory>
+	</annotations>
+	<detectors>
+		<detector>
+			<type>CascadeObjectDetector</type>
+			<model>/sb/peopleDetectionComparison/models/haarCascadeModels/inria/cascade.xml</model>
+		</detector>
+		<detector>
+			<type>CascadeObjectDetector</type>
+			<model>/sb/peopleDetectionComparison/models/hogCascadeModels/inria/cascade.xml</model>
+		</detector>
+		<detector>
+			<type>CascadeObjectDetector</type>
+			<model>/sb/peopleDetectionComparison/models/lbpCascadeModels/inria/cascade.xml</model>
+		</detector>
+	</detectors>
+</config>
