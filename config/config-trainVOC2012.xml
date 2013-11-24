@@ -4,8 +4,10 @@
 		<fileExtension>jpg</fileExtension>
 		<directory>/sb/data/person/voc2012/train/JPEGImages</directory>
 		<directoryFilterFile>/sb/data/person/voc2012/train/ImageSets/Main/person_trainval.txt</directoryFilterFile>
-		<annotationsDirectory>/sb/data/person/voc2012/train/Annotations</annotationsDirectory>
 	</image>
-	<detectors>
-	</detectors>
+	<annotations>
+		<fileExtension>xml</fileExtension>
+		<directory>/sb/data/person/voc2012/train/Annotations</directory>
+	</annotations>
+	<detectors/>
 </config>
