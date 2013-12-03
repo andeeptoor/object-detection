@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config>
+	<image>
+		<fileExtension>jpg</fileExtension>
+		<directory>/sb/data/person/voc2012/train/JPEGImages</directory>
+		<directoryFilterFile>/sb/data/person/voc2012/train/ImageSets/Main/person_trainval.txt</directoryFilterFile>
+	</image>
+	<annotations>
+		<fileExtension>xml</fileExtension>
+		<directory>/sb/data/person/voc2012/train/Annotations</directory>
+	</annotations>
+	<detectors/>
+</config>

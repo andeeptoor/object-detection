@@ -39,9 +39,14 @@ AnnotatedImage PascalAnnotationFileParser::parseXmlAnnotationFile(string filenam
 	doc.LoadFile(filename.c_str());
 	XMLElement* annotationElement = doc.FirstChildElement("annotation");
 	XMLElement* sizeElement = getChild("size", annotationElement);
-	image.imageWidth = utils::stringToInt(getChildText("width",sizeElement));
-	image.imageHeight = utils::stringToInt(getChildText("height",sizeElement));
-	image.numberOfColors = utils::stringToInt(getChildText("depth",sizeElement));
+	image.imageWidth = utils::stringToInt(getChildText("width", sizeElement));
+	image.imageHeight = utils::stringToInt(getChildText("height", sizeElement));
+	XMLElement* depthElement = sizeElement->FirstChildElement("depth");
+	if (depthElement != NULL) {
+		image.numberOfColors = utils::stringToInt(depthElement->GetText());
+	} else {
+		image.numberOfColors = 3;
+	}
 
 	int x1, x2, y1, y2;
 	XMLElement * objectElement = annotationElement->FirstChildElement("object");

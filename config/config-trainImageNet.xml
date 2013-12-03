@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config>
+	<image>
+		<fileExtension>JPEG</fileExtension>
+		<directory>/sb/data/person/ImageNet/train/pos</directory>
+		<directoryFilterFile>/sb/data/person/ImageNet/train/train_pos_124.txt</directoryFilterFile>
+	</image>
+	<annotations>
+		<fileExtension>xml</fileExtension>
+		<directory>/sb/data/person/ImageNet/train/annotations</directory>
+	</annotations>
+	<detectors/>
+</config>

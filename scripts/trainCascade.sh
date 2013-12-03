@@ -3,9 +3,9 @@
 positiveExamples=$1
 negativeExamples=$2
 featureType=$3
-negativeNumber=1218
-positiveNumber=614
-bufferSize=2048
+negativeNumber=2247
+positiveNumber=8877
+bufferSize=4048
 width=20
 height=20
 

@@ -2,7 +2,7 @@
 filename=/sb/data/person/ImageNet/train/train_pos_124.txt
 originalAnnotationDirectory=/sb/data/person/ImageNet/train/ILSVRC2013_DET_bbox_train
 outputAnnotationDirectory=/sb/data/person/ImageNet/train/annotations/
-imageDirectory=/sb/data/person/ImageNet/train/pos/
+imageDirectory=/sb/data/person/ImageNet/train/pos
 cd $imageDirectory
 while read line
 do
@@ -12,9 +12,17 @@ do
 	tarPath=$imageDirectory/$directory.tar
 	if [ -f $tarPath ];
 	then
-   		tar xvf $imageDirectory/$directory.tar
-   		rm -rf $imageDirectory/$directory.tar
+   		tar xvf $tarPath
+   		rm -rf $tarPath
 	else
    		echo "File $tarPath does not exist."
+	fi
+	untarredPath=$imageDirectory/$directory
+	if [ -d $untarredPath ];
+	then
+   		cp $untarredPath/* .
+   		rm -rf $untarredPath
+	else
+   		echo "Directory $untarredPath does not exist."
 	fi
 done < $filename

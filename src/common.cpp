@@ -11,11 +11,12 @@
 XMLElement* getChild(const string& childName, XMLElement* parentElement) {
 	XMLElement* childElement = parentElement->FirstChildElement(childName.c_str());
 	if (childElement == NULL) {
-		printf("ERROR: Element [%s->%s] not found.", parentElement->Name(), childName.c_str());
+		printf("XML ERROR: Element [%s->%s] not found.\n", parentElement->Name(), childName.c_str());
 		exit(EXIT_FAILURE);
 	}
 	return childElement;
 }
+
 string getChildText(const string& childName, XMLElement* parentElement) {
 	return getChild(childName, parentElement)->GetText();
 }

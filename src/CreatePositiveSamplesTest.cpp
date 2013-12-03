@@ -36,7 +36,8 @@ void readFilesFromFilterFile(const string directory, const string fileExtension,
 }
 
 bool exclude(const string objectName) {
-	return !utils::equals(objectName, "person");
+	return false;
+//	return !utils::equals(objectName, "person");
 }
 
 int main(int argc, char** argv) {
@@ -66,7 +67,7 @@ int main(int argc, char** argv) {
 
 	Mat image;
 	string filename;
-	int i, objectsCount;
+	int i, objectsCount, totalCount=0;
 	set<string> uniqueNames;
 	bool addObject;
 	for (int f = 0; f < files.size(); f++) {
@@ -90,6 +91,7 @@ int main(int argc, char** argv) {
 				uniqueNames.insert(annotatedImage.objects[i].label);
 				addObject = true;
 				objectsCount++;
+				totalCount++;
 			}
 		}
 		if (addObject) {
@@ -105,5 +107,8 @@ int main(int argc, char** argv) {
 	for (set<string>::iterator it = uniqueNames.begin(); it != uniqueNames.end(); ++it) {
 		printf("name: [%s]\n", (*it).c_str());
 	}
+
+	printf("%lu files\n", files.size());
+	printf("%d objects\n", totalCount);
 	return EXIT_SUCCESS;
 }
