@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<config>
+	<image>
+		<fileExtension>jpg</fileExtension>
+		<directory>/sb/data/faces/caltech</directory>
+	</image>
+	<annotations>
+		<fileExtension>csv</fileExtension>
+		<format>caltech</format>
+		<directory>/sb/data/faces/caltech</directory>
+	</annotations>
+	<detectors>
+		<detector>
+			<type>CascadeObjectDetector</type>
+			<model>/sb/peopleDetectionComparison/models/faces/haarCascadeModels/haarcascade_fullbody.xml</model>
+		</detector>
+		<detector>
+			<type>CascadeObjectDetector</type>
+			<model>/sb/peopleDetectionComparison/resources/hogCascadeModels/hogcascade_pedestrians.xml</model>
+		</detector>
+	</detectors>
+</config>
