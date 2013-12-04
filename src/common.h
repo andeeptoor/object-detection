@@ -30,6 +30,7 @@ struct Config {
 	string imageDirectoryFilterFile;
 	string annotationsDirectory;
 	string annotationsFileExtension;
+	string annotationsFileFormat;
 	vector<ObjectDetector *> objectDetectors;
 };
 

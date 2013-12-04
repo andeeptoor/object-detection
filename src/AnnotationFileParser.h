@@ -6,7 +6,7 @@
  */
 
 #ifndef PASCALANNOTATIONFILEPARSER_H_
-#define PASCALANNOTATIONFILEPARSER_H_
+#define ANNOTATIONFILEPARSER_H_
 
 #include <string>
 #include <vector>
@@ -26,15 +26,16 @@ struct AnnotatedImage{
 	vector<AnnotatedObject> objects;
 };
 
-class PascalAnnotationFileParser {
+class AnnotationFileParser {
 public:
-	PascalAnnotationFileParser();
-	virtual ~PascalAnnotationFileParser();
-	AnnotatedImage parseAnnotationFile(string annotationFile);
+	AnnotationFileParser();
+	virtual ~AnnotationFileParser();
+	AnnotatedImage parseAnnotationFile(string annotationFile, string format);
 private:
-	AnnotatedImage parseTextAnnotationFile(string annotationFile);
-	AnnotatedImage parseXmlAnnotationFile(string annotationFile);
+	AnnotatedImage parsePascalTextAnnotationFile(string annotationFile);
+	AnnotatedImage parsePascalXmlAnnotationFile(string annotationFile);
+	AnnotatedImage parseCaltechAnnotationFile(string annotationFile);
 };
 
 
-#endif /* PASCALANNOTATIONFILEPARSER_H_ */
+#endif /* ANNOTATIONFILEPARSER_H_ */

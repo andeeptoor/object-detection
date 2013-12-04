@@ -10,7 +10,7 @@
 
 #include "common.h"
 #include "math.h"
-#include "PascalAnnotationFileParser.h"
+#include "AnnotationFileParser.h"
 #include "ObjectDetector.h"
 
 using namespace cv;
@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
 	}
 
 	Config config = readConfigFile(argv[1]);
-	PascalAnnotationFileParser parser;
+	AnnotationFileParser parser;
 
 	vector<string> files;
 

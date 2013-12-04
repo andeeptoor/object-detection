@@ -1,11 +1,4 @@
-/*
- * PascalAnnotationFileParser.cpp
- *
- *  Created on: Nov 13, 2013
- *      Author: atoor
- */
-
-#include "PascalAnnotationFileParser.h"
+#include "AnnotationFileParser.h"
 #include "utils.h"
 #include "common.h"
 #include <fstream>
@@ -13,26 +6,35 @@
 
 using namespace tinyxml2;
 
-PascalAnnotationFileParser::PascalAnnotationFileParser() {
+AnnotationFileParser::AnnotationFileParser() {
 
 }
 
-PascalAnnotationFileParser::~PascalAnnotationFileParser() {
+AnnotationFileParser::~AnnotationFileParser() {
 }
 
-AnnotatedImage PascalAnnotationFileParser::parseAnnotationFile(string filename) {
-	if (utils::matchesFileExtension(filename, "txt")) {
-		return parseTextAnnotationFile(filename);
-	} else if (utils::matchesFileExtension(filename, "xml")) {
-		return parseXmlAnnotationFile(filename);
+AnnotatedImage AnnotationFileParser::parseAnnotationFile(string filename, string format) {
+	if (utils::equals(format, "pascal")) {
+		if (utils::matchesFileExtension(filename, "txt")) {
+			return parsePascalTextAnnotationFile(filename);
+		} else if (utils::matchesFileExtension(filename, "xml")) {
+			return parsePascalXmlAnnotationFile(filename);
+		}
+	} else if (utils::equals(format, "caltech")) {
+			return parseCaltechAnnotationFile(filename);
 	}
 
-	printf("Unknown file extension for annotation file [%s]", filename.c_str());
+	printf("Unknown format/file extension for annotation file [%s/%s]", format.c_str(), filename.c_str());
 	exit(EXIT_FAILURE);
 
 }
 
-AnnotatedImage PascalAnnotationFileParser::parseXmlAnnotationFile(string filename) {
+AnnotatedImage AnnotationFileParser::parseCaltechAnnotationFile(string filename) {
+	AnnotatedImage image;
+	return image;
+}
+
+AnnotatedImage AnnotationFileParser::parsePascalXmlAnnotationFile(string filename) {
 	AnnotatedImage image;
 
 	XMLDocument doc;
@@ -68,7 +70,7 @@ AnnotatedImage PascalAnnotationFileParser::parseXmlAnnotationFile(string filenam
 	return image;
 }
 
-AnnotatedImage PascalAnnotationFileParser::parseTextAnnotationFile(string filename) {
+AnnotatedImage AnnotationFileParser::parsePascalTextAnnotationFile(string filename) {
 	AnnotatedImage image;
 
 	string imageSizeString = "Image size (X x Y x C) : %d x %d x %d";

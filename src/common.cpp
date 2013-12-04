@@ -36,6 +36,7 @@ Config readConfigFile(char* configFile) {
 	XMLElement* annotationsElement = getChild("annotations", configElement);
 	config.annotationsDirectory = getChildText("directory", annotationsElement);
 	config.annotationsFileExtension = getChildText("fileExtension", annotationsElement);
+	config.annotationsFileFormat = getChildText("fileFormat", annotationsElement);
 
 	XMLElement* detectors = getChild("detectors", configElement);
 	XMLElement* detectorElement = detectors->FirstChildElement("detector");
