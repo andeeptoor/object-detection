@@ -23,6 +23,7 @@ double stringToDouble(char * arg);
 int stringToInt(string arg);
 double stringToDouble(string arg);
 bool isDirectory(string name);
+string findAndReplace(const string find, const string replace, const string fullString);
 string append(string one, string two);
 string convertToFileExtension(string file, string extension);
 string getFileWithoutParentDirectory(string fileName) ;

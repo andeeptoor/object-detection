@@ -16,7 +16,7 @@ public:
 	virtual ~EvaluationCalculator();
 	void evaluatePredictions(Evaluation &evaluation, const AnnotatedImage annotatedImage, const vector<DetectedObject> predictedObjects);
 	double calculateAveragePrecision(Evaluation eval);
-	void printEvaluations(int i, vector<Evaluation>& evaluations, vector<ObjectDetector*>& detectors);
+	void printEvaluations(vector<Evaluation>& evaluations, vector<ObjectDetector*>& detectors);
 };
 
 #endif /* EVALUATIONCALCULATOR_H_ */

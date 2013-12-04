@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<config>
+	<image>
+		<fileExtension>jpg</fileExtension>
+		<directory>/sb/data/faces/FDDB/images</directory>
+	</image>
+	<annotations>
+		<fileExtension>txt</fileExtension>
+		<fileFormat>fddb</fileFormat>
+		<directory>/sb/data/faces/FDDB/images</directory>
+	</annotations>
+	<detection>
+		<outputImages>
+			<directory>/sb/data/faces/FDDB/annotatedImages</directory>
+		</outputImages>
+	</detection>
+	<detectors>
+		<detector>
+			<type>CascadeObjectDetector</type>
+			<model>/sb/peopleDetectionComparison/models/faces/haarCascadeModels/opencv-default/haarcascade_frontalface_default.xml</model>
+		</detector>
+		<detector>
+			<type>CascadeObjectDetector</type>
+			<model>/sb/peopleDetectionComparison/models/faces/lbpCascadeModels/opencv-default/lbpcascade_frontalface.xml</model>
+		</detector>
+	</detectors>
+</config>

@@ -17,7 +17,8 @@ EvaluationCalculator::~EvaluationCalculator() {
 }
 
 
-void EvaluationCalculator::printEvaluations(int i, vector<Evaluation>& evaluations, vector<ObjectDetector*>& detectors) {
+void EvaluationCalculator::printEvaluations(vector<Evaluation>& evaluations, vector<ObjectDetector*>& detectors) {
+	int i;
 	for (i = 0; i < evaluations.size(); i++) {
 		if (evaluations[i].total.numberOfPositives > 0) {
 			evaluations[i].total.recall = double(evaluations[i].total.truePositive) / double(evaluations[i].total.numberOfPositives);

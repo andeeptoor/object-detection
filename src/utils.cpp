@@ -20,6 +20,16 @@ using namespace std;
 
 namespace utils {
 
+string findAndReplace(const string find, const string replace, const string fullString) {
+	int index;
+	index = fullString.find(find);
+	if (index > -1) {
+		string keepString = fullString.substr(index + find.length());
+		return append(replace, keepString);
+	}
+	return "";
+}
+
 vector<string> &split(const string &s, char delim, vector<string> &elems) {
 	stringstream ss(s);
 	string item;
@@ -51,7 +61,7 @@ double stringToDouble(string arg) {
 	return stringToDouble((char *) arg.c_str());
 }
 
-string append(string one, string two){
+string append(string one, string two) {
 	stringstream stream1;
 	stream1 << one << two;
 	return stream1.str();
@@ -108,13 +118,13 @@ string getFileWithoutParentDirectory(string fileName) {
 	std::string::size_type index;
 	index = fileName.rfind('/');
 	if (index != std::string::npos) {
-		string converted = fileName.substr(index+1);
+		string converted = fileName.substr(index + 1);
 		return converted;
 	}
 	return "";
 }
 
-string convertToParentDirectory(string file, string parentDirectory){
+string convertToParentDirectory(string file, string parentDirectory) {
 	string fileWithoutParentDirectory = utils::getFileWithoutParentDirectory(file);
 	stringstream stream1;
 	stream1 << parentDirectory << "/" << fileWithoutParentDirectory;

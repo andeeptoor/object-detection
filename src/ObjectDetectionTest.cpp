@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
 	for (int f = 0; f < files.size(); f++) {
 		filename = files[f];
 
-		string annotationFile = utils::convertToParentDirectory(filename, config.annotationsDirectory);
+		string annotationFile = utils::findAndReplace(config.imageDirectory, config.annotationsDirectory, filename);
 		annotationFile = utils::convertToFileExtension(annotationFile, config.annotationsFileExtension);
 		AnnotatedImage annotatedImage = parser.parseAnnotationFile(annotationFile, config.annotationsFileFormat);
 
@@ -84,12 +84,12 @@ int main(int argc, char** argv) {
 			}
 		}
 		if (config.detectionOutputImages) {
-			string taggedImageFile = utils::append(utils::append(config.detectionOutputImagesDirectory, "/"), utils::getFileWithoutParentDirectory(files[f]));
+			string taggedImageFile = utils::findAndReplace(config.imageDirectory, config.detectionOutputImagesDirectory, filename);
 			printf("Outputting image to [%s]\n", taggedImageFile.c_str());
 			imwrite(taggedImageFile, image);
 		}
 	}
 
-	calculator.printEvaluations(i, evaluations, detectors);
+	calculator.printEvaluations(evaluations, detectors);
 	return EXIT_SUCCESS;
 }

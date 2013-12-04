@@ -99,7 +99,7 @@ CascadeObjectDetector::CascadeObjectDetector(string _model) {
 vector<DetectedObject> CascadeObjectDetector::detectObjects(Mat image) {
 	Mat gray;
 	cvtColor(image, gray, CV_RGB2GRAY);
-	equalizeHist(gray, gray);
+//	equalizeHist(gray, gray);
 	detector->process(gray);
 	vector<Rect> found;
 	detector->getObjects(found);
