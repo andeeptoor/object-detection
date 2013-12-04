@@ -13,7 +13,7 @@ AnnotationFileParser::AnnotationFileParser() {
 AnnotationFileParser::~AnnotationFileParser() {
 }
 
-AnnotatedImage AnnotationFileParser::parseAnnotationFile(string filename, string format) {
+vector<AnnotatedImage> AnnotationFileParser::parseAnnotationFile(string filename, string format) {
 	if (utils::equals(format, "pascal")) {
 		if (utils::matchesFileExtension(filename, "txt")) {
 			return parsePascalTextAnnotationFile(filename);
@@ -21,7 +21,7 @@ AnnotatedImage AnnotationFileParser::parseAnnotationFile(string filename, string
 			return parsePascalXmlAnnotationFile(filename);
 		}
 	} else if (utils::equals(format, "caltech")) {
-			return parseCaltechAnnotationFile(filename);
+		return parseCaltechAnnotationFile(filename);
 	}
 
 	printf("Unknown format/file extension for annotation file [%s/%s]", format.c_str(), filename.c_str());
@@ -29,12 +29,30 @@ AnnotatedImage AnnotationFileParser::parseAnnotationFile(string filename, string
 
 }
 
-AnnotatedImage AnnotationFileParser::parseCaltechAnnotationFile(string filename) {
+vector<AnnotatedImage> AnnotationFileParser::parseCaltechAnnotationFile(string filename) {
+
+	vector<AnnotatedImage> images;
 	AnnotatedImage image;
-	return image;
+
+
+	ifstream inputFile(filename.c_str());
+	if (!inputFile) {
+		printf("Cannot open data file [%s]\n", filename.c_str());
+		exit(EXIT_FAILURE);
+	}
+
+	string line;
+	int objectNumber;
+	int x1, x2, y1, y2;
+	while (getline(inputFile, line)) {
+		printf("%s", line.c_str());
+	}
+
+	return images;
 }
 
-AnnotatedImage AnnotationFileParser::parsePascalXmlAnnotationFile(string filename) {
+vector<AnnotatedImage> AnnotationFileParser::parsePascalXmlAnnotationFile(string filename) {
+	vector<AnnotatedImage> images;
 	AnnotatedImage image;
 
 	XMLDocument doc;
@@ -67,10 +85,12 @@ AnnotatedImage AnnotationFileParser::parsePascalXmlAnnotationFile(string filenam
 		image.objects.push_back(a);
 		objectElement = annotationElement->NextSiblingElement("object");
 	}
-	return image;
+	images.push_back(image);
+	return images;
 }
 
-AnnotatedImage AnnotationFileParser::parsePascalTextAnnotationFile(string filename) {
+vector<AnnotatedImage> AnnotationFileParser::parsePascalTextAnnotationFile(string filename) {
+	vector<AnnotatedImage> images;
 	AnnotatedImage image;
 
 	string imageSizeString = "Image size (X x Y x C) : %d x %d x %d";
@@ -125,6 +145,7 @@ AnnotatedImage AnnotationFileParser::parsePascalTextAnnotationFile(string filena
 //		printf("\tBounding max: (%d,%d)\n", image.objects[o].boundingBox.br().x, image.objects[o].boundingBox.br().y);
 //	}
 
-	return image;
+	images.push_back(image);
+	return images;
 }
 

@@ -10,13 +10,13 @@
 		<directory>/sb/data/faces/caltech</directory>
 	</annotations>
 	<detectors>
-		<detector>
+		<!--detector>
 			<type>CascadeObjectDetector</type>
 			<model>/sb/peopleDetectionComparison/models/faces/haarCascadeModels/opencv-default/haarcascade_frontalface_default.xml</model>
 		</detector>
 		<detector>
 			<type>CascadeObjectDetector</type>
-			<model>/sb/peopleDetectionComparison/resources/hogCascadeModels/hogcascade_pedestrians.xml</model>
-		</detector>
+			<model>/sb/peopleDetectionComparison/resources/lbpCascadeModels/lbpcascade_frontalface.xml</model>
+		</detector-->
 	</detectors>
 </config>

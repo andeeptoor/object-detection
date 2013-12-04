@@ -11,30 +11,20 @@
 #include <string>
 #include <vector>
 #include "opencv2/imgproc/imgproc.hpp"
+#include "common.h"
 
 using namespace cv;
 using namespace std;
-
-struct AnnotatedObject {
-	string label;
-	Point centerPoint;
-	Rect boundingBox;
-};
-
-struct AnnotatedImage{
-	int imageWidth, imageHeight, numberOfColors;
-	vector<AnnotatedObject> objects;
-};
 
 class AnnotationFileParser {
 public:
 	AnnotationFileParser();
 	virtual ~AnnotationFileParser();
-	AnnotatedImage parseAnnotationFile(string annotationFile, string format);
+	vector<AnnotatedImage> parseAnnotationFile(string annotationFile, string format);
 private:
-	AnnotatedImage parsePascalTextAnnotationFile(string annotationFile);
-	AnnotatedImage parsePascalXmlAnnotationFile(string annotationFile);
-	AnnotatedImage parseCaltechAnnotationFile(string annotationFile);
+	vector<AnnotatedImage> parsePascalTextAnnotationFile(string annotationFile);
+	vector<AnnotatedImage> parsePascalXmlAnnotationFile(string annotationFile);
+	vector<AnnotatedImage> parseCaltechAnnotationFile(string annotationFile);
 };
 
 

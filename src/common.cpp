@@ -8,6 +8,15 @@
 #include "common.h"
 #include <iostream>
 
+Rect unionOf(Rect r1, Rect r2) {
+	int x1 = min(r1.x, r2.x);
+	int x2 = max(r1.x + r1.width, r2.x + r2.width);
+	int y1 = min(r1.y, r2.y);
+	int y2 = max(r1.y + r1.height, r2.y + r2.height);
+	return Rect(x1, y1, x2 - x1, y2 - y1);
+}
+
+
 XMLElement* getChild(const string& childName, XMLElement* parentElement) {
 	XMLElement* childElement = parentElement->FirstChildElement(childName.c_str());
 	if (childElement == NULL) {

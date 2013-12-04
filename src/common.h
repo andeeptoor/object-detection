@@ -17,11 +17,30 @@
 using namespace std;
 using namespace tinyxml2;
 
-struct TimeSeries {
-	vector<double> values;
-	double mean;
-	double standardDeviation;
-	int classification;
+struct AnnotatedObject {
+	string label;
+	Point centerPoint;
+	Rect boundingBox;
+};
+
+struct AnnotatedImage{
+	int imageWidth, imageHeight, numberOfColors;
+	vector<AnnotatedObject> objects;
+};
+
+struct EvaluationImage {
+	int truePositive;
+	int falsePositive;
+	int numberOfPositives;
+	double recall;
+	double precision;
+};
+
+struct Evaluation {
+	vector<EvaluationImage> evaluations;
+	EvaluationImage total;
+	double averagePrecision;
+	double totalDetectionTime;
 };
 
 struct Config {
@@ -34,6 +53,7 @@ struct Config {
 	vector<ObjectDetector *> objectDetectors;
 };
 
+Rect unionOf(Rect r1, Rect r2);
 XMLElement* getChild(const string& childName, XMLElement* parentElement) ;
 string getChildText(const string& childName, XMLElement* parentElement) ;
 Config readConfigFile(char* configFile);
