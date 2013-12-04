@@ -177,7 +177,7 @@ int main(int argc, char** argv) {
 
 		string annotationFile = utils::convertToParentDirectory(filename, config.annotationsDirectory);
 		annotationFile = utils::convertToFileExtension(annotationFile, "txt");
-		AnnotatedImage annotatedImage = parser.parseAnnotationFile(annotationFile);
+		AnnotatedImage annotatedImage = parser.parseAnnotationFile(annotationFile, config.annotationsFileFormat);
 
 		if (annotatedImage.numberOfColors == 1) {
 			image = imread(filename, CV_LOAD_IMAGE_GRAYSCALE);

@@ -75,7 +75,7 @@ int main(int argc, char** argv) {
 		filename = files[f];
 		string annotationFile = utils::convertToParentDirectory(filename, config.annotationsDirectory);
 		annotationFile = utils::convertToFileExtension(annotationFile, config.annotationsFileExtension);
-		AnnotatedImage annotatedImage = parser.parseAnnotationFile(annotationFile);
+		AnnotatedImage annotatedImage = parser.parseAnnotationFile(annotationFile, config.annotationsFileFormat);
 
 		addObject = false;
 		objectsCount = 0;
