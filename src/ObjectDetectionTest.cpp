@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
 	EvaluationCalculator calculator;
 	vector<ObjectDetector *> detectors = config.objectDetectors;
 	vector<Evaluation> evaluations(detectors.size());
-	int i;
+	int i,p;
 	for (i = 0; i < evaluations.size(); i++) {
 		evaluations[i].total.falsePositive = 0;
 		evaluations[i].total.truePositive = 0;
@@ -44,8 +44,8 @@ int main(int argc, char** argv) {
 		filename = files[f];
 
 		string annotationFile = utils::convertToParentDirectory(filename, config.annotationsDirectory);
-		annotationFile = utils::convertToFileExtension(annotationFile, "txt");
-		AnnotatedImage annotatedImage = parser.parseAnnotationFile(annotationFile, config.annotationsFileFormat)[0];
+		annotationFile = utils::convertToFileExtension(annotationFile, config.annotationsFileExtension);
+		AnnotatedImage annotatedImage = parser.parseAnnotationFile(annotationFile, config.annotationsFileFormat);
 
 		if (annotatedImage.numberOfColors == 1) {
 			image = imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
@@ -53,10 +53,18 @@ int main(int argc, char** argv) {
 			image = imread(filename, CV_LOAD_IMAGE_COLOR);
 		}
 
-		resize(image, image, Size(annotatedImage.imageWidth, annotatedImage.imageHeight));
+		if (annotatedImage.imageWidth > 0 && annotatedImage.imageHeight > 0) {
+			resize(image, image, Size(annotatedImage.imageWidth, annotatedImage.imageHeight));
+		}
 		printf("File[%d/%lu]: %s\n", f + 1, files.size(), filename.c_str());
 		if (!image.data) {
 			continue;
+		}
+
+		if (config.detectionOutputImages) {
+			for (i = 0; i < annotatedImage.objects.size(); i++) {
+				rectangle(image, annotatedImage.objects[i].boundingBox, cv::Scalar(255, 255, 255), 3);
+			}
 		}
 
 		for (i = 0; i < detectors.size(); i++) {
@@ -68,6 +76,17 @@ int main(int argc, char** argv) {
 			printf("\t\tDetection time = %f sec\n", tm.getTimeSec());
 			evaluations[i].totalDetectionTime += tm.getTimeSec();
 			calculator.evaluatePredictions(evaluations[i], annotatedImage, predictedObjects);
+
+			if (config.detectionOutputImages) {
+				for (p = 0; p < predictedObjects.size(); p++) {
+					rectangle(image, predictedObjects[p].boundingBox, cv::Scalar(i*20, i*20, i*20), 3);
+				}
+			}
+		}
+		if (config.detectionOutputImages) {
+			string taggedImageFile = utils::append(utils::append(config.detectionOutputImagesDirectory, "/"), utils::getFileWithoutParentDirectory(files[f]));
+			printf("Outputting image to [%s]\n", taggedImageFile.c_str());
+			imwrite(taggedImageFile, image);
 		}
 	}
 

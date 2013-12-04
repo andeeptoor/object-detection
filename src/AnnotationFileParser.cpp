@@ -13,7 +13,7 @@ AnnotationFileParser::AnnotationFileParser() {
 AnnotationFileParser::~AnnotationFileParser() {
 }
 
-vector<AnnotatedImage> AnnotationFileParser::parseAnnotationFile(string filename, string format) {
+AnnotatedImage AnnotationFileParser::parseAnnotationFile(string filename, string format) {
 	if (utils::equals(format, "pascal")) {
 		if (utils::matchesFileExtension(filename, "txt")) {
 			return parsePascalTextAnnotationFile(filename);
@@ -29,11 +29,9 @@ vector<AnnotatedImage> AnnotationFileParser::parseAnnotationFile(string filename
 
 }
 
-vector<AnnotatedImage> AnnotationFileParser::parseCaltechAnnotationFile(string filename) {
+AnnotatedImage AnnotationFileParser::parseCaltechAnnotationFile(string filename) {
 
-	vector<AnnotatedImage> images;
 	AnnotatedImage image;
-
 
 	ifstream inputFile(filename.c_str());
 	if (!inputFile) {
@@ -42,17 +40,23 @@ vector<AnnotatedImage> AnnotationFileParser::parseCaltechAnnotationFile(string f
 	}
 
 	string line;
-	int objectNumber;
-	int x1, x2, y1, y2;
-	while (getline(inputFile, line)) {
-		printf("%s", line.c_str());
-	}
+	double x1, x2, y1, y2, ignore;
+	getline(inputFile, line);
+	istringstream ss(line);
+	char comma;
 
-	return images;
+	ss >> ignore >> comma >> ignore >> comma;
+	ss >> x1 >> comma >> y1 >> comma;
+	ss >> ignore >> comma >> ignore >> comma;
+	ss >> x2 >> comma >> y2;
+	AnnotatedObject a;
+	Rect r(Point(x1, y1), Point(x2, y2));
+	a.boundingBox = r;
+	image.objects.push_back(a);
+	return image;
 }
 
-vector<AnnotatedImage> AnnotationFileParser::parsePascalXmlAnnotationFile(string filename) {
-	vector<AnnotatedImage> images;
+AnnotatedImage AnnotationFileParser::parsePascalXmlAnnotationFile(string filename) {
 	AnnotatedImage image;
 
 	XMLDocument doc;
@@ -85,12 +89,10 @@ vector<AnnotatedImage> AnnotationFileParser::parsePascalXmlAnnotationFile(string
 		image.objects.push_back(a);
 		objectElement = annotationElement->NextSiblingElement("object");
 	}
-	images.push_back(image);
-	return images;
+	return image;
 }
 
-vector<AnnotatedImage> AnnotationFileParser::parsePascalTextAnnotationFile(string filename) {
-	vector<AnnotatedImage> images;
+AnnotatedImage AnnotationFileParser::parsePascalTextAnnotationFile(string filename) {
 	AnnotatedImage image;
 
 	string imageSizeString = "Image size (X x Y x C) : %d x %d x %d";
@@ -145,7 +147,6 @@ vector<AnnotatedImage> AnnotationFileParser::parsePascalTextAnnotationFile(strin
 //		printf("\tBounding max: (%d,%d)\n", image.objects[o].boundingBox.br().x, image.objects[o].boundingBox.br().y);
 //	}
 
-	images.push_back(image);
-	return images;
+	return image;
 }
 

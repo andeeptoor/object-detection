@@ -47,6 +47,13 @@ Config readConfigFile(char* configFile) {
 	config.annotationsFileExtension = getChildText("fileExtension", annotationsElement);
 	config.annotationsFileFormat = getChildText("fileFormat", annotationsElement);
 
+	XMLElement* detectionElement = getChild("detection", configElement);
+	XMLElement* outputImagesElement = detectionElement->FirstChildElement("outputImages");
+	if (outputImagesElement != NULL){
+		config.detectionOutputImages=true;
+		config.detectionOutputImagesDirectory=getChildText("directory", outputImagesElement);
+	}
+
 	XMLElement* detectors = getChild("detectors", configElement);
 	XMLElement* detectorElement = detectors->FirstChildElement("detector");
 

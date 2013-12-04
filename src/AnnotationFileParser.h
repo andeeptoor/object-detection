@@ -20,11 +20,11 @@ class AnnotationFileParser {
 public:
 	AnnotationFileParser();
 	virtual ~AnnotationFileParser();
-	vector<AnnotatedImage> parseAnnotationFile(string annotationFile, string format);
+	AnnotatedImage parseAnnotationFile(string annotationFile, string format);
 private:
-	vector<AnnotatedImage> parsePascalTextAnnotationFile(string annotationFile);
-	vector<AnnotatedImage> parsePascalXmlAnnotationFile(string annotationFile);
-	vector<AnnotatedImage> parseCaltechAnnotationFile(string annotationFile);
+	AnnotatedImage parsePascalTextAnnotationFile(string annotationFile);
+	AnnotatedImage parsePascalXmlAnnotationFile(string annotationFile);
+	AnnotatedImage parseCaltechAnnotationFile(string annotationFile);
 };
 
 

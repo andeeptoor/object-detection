@@ -51,6 +51,8 @@ struct Config {
 	string annotationsFileExtension;
 	string annotationsFileFormat;
 	vector<ObjectDetector *> objectDetectors;
+	bool detectionOutputImages;
+	string detectionOutputImagesDirectory;
 };
 
 Rect unionOf(Rect r1, Rect r2);
