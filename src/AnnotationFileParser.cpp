@@ -22,12 +22,46 @@ AnnotatedImage AnnotationFileParser::parseAnnotationFile(string filename, string
 		}
 	} else if (utils::equals(format, "caltech")) {
 		return parseCaltechAnnotationFile(filename);
+	} else if (utils::equals(format, "fddb")) {
+		return parseFDDBAnnotationFile(filename);
+	} else if (utils::equals(format, "youtube")) {
+		return parseYouTubeAnnotationFile(filename);
 	}
 
 	printf("Unknown format/file extension for annotation file [%s/%s]", format.c_str(), filename.c_str());
 	exit(EXIT_FAILURE);
 
 }
+
+AnnotatedImage AnnotationFileParser::parseYouTubeAnnotationFile(string filename) {
+	AnnotatedImage image;
+	ifstream inputFile(filename.c_str());
+	if (!inputFile) {
+		printf("Cannot open data file [%s]\n", filename.c_str());
+		exit(EXIT_FAILURE);
+	}
+
+	string line;
+	int centerX, width, height, centerY, ignore;
+	char comma;
+
+	//[ignore],x,y,width,height,[ignore],[ignore]
+
+	while (getline(inputFile, line)) {
+		istringstream ss(line);
+		ss >> ignore >> comma;
+		ss >> centerX >> comma >> centerY >> comma;
+		ss >> width >> comma >> height >> comma;
+
+		AnnotatedObject a;
+		Rect r(Point(centerX-width, centerY-height), Point(centerX+width, centerY+height));
+		a.boundingBox = r;
+		image.objects.push_back(a);
+	}
+
+	return image;
+}
+
 
 AnnotatedImage AnnotationFileParser::parseCaltechAnnotationFile(string filename) {
 	AnnotatedImage image;
