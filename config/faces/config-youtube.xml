@@ -6,13 +6,13 @@
 	</image>
 	<annotations>
 		<fileExtension>txt</fileExtension>
-		<fileFormat>fddb</fileFormat>
+		<fileFormat>youtube</fileFormat>
 		<directory>/sb/data/faces/youtube/images</directory>
 	</annotations>
 	<detection>
-		<outputImages>
+		<!-->outputImages>
 			<directory>/sb/data/faces/youtube/annotatedImages</directory>
-		</outputImages>
+		</outputImages-->
 	</detection>
 	<detectors>
 		<detector>
