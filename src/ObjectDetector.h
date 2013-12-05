@@ -14,7 +14,7 @@
 
 using namespace cv;
 
-struct DetectedObject{
+struct DetectedObject {
 	Rect boundingBox;
 	double confidenceLevel;
 };
@@ -60,6 +60,7 @@ public:
 		return this->nameAndModel;
 	}
 private:
+//	CascadeClassifier cascade;
 	DetectionBasedTracker * detector;
 	string nameAndModel;
 };

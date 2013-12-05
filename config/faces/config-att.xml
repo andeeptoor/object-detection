@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
 <config>
 	<image>
-		<fileExtension>jpg</fileExtension>
-		<directory>/sb/data/faces/caltech/images</directory>
+		<fileExtension>pgm</fileExtension>
+		<directory>/sb/data/faces/att/images</directory>
 	</image>
 	<annotations>
-		<fileExtension>txt</fileExtension>
-		<fileFormat>caltech</fileFormat>
-		<directory>/sb/data/faces/caltech/annotations</directory>
+		<fileExtension>xml</fileExtension>
+		<fileFormat>pascal</fileFormat>
+		<directory>/sb/data/faces/att/images</directory>
 	</annotations>
 	<detection>
-		<!-->outputImages>
-			<directory>/sb/data/faces/caltech/annotatedImages</directory>
-		</outputImages-->
+		<outputImages>
+			<directory>/sb/data/faces/att/annotatedImages</directory>
+		</outputImages>
 	</detection>
 	<detectors>
 		<detector>
