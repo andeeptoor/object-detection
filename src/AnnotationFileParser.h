@@ -25,6 +25,7 @@ private:
 	AnnotatedImage parsePascalTextAnnotationFile(string annotationFile);
 	AnnotatedImage parsePascalXmlAnnotationFile(string annotationFile);
 	AnnotatedImage parseCaltechAnnotationFile(string annotationFile);
+	AnnotatedImage parseFDDBAnnotationFile(string annotationFile);
 };
 
 

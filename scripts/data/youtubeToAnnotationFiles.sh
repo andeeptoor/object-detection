@@ -1,6 +1,5 @@
 #!/bin/bash
 annotationFiles=/sb/data/faces/youtube/annotationFiles.txt
-filenamesFile=/sb/data/faces/caltech/files.txt
 outputAnnotationsDirectory=/sb/data/faces/youtube/images
 
 while read fileLine

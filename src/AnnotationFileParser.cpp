@@ -30,9 +30,7 @@ AnnotatedImage AnnotationFileParser::parseAnnotationFile(string filename, string
 }
 
 AnnotatedImage AnnotationFileParser::parseCaltechAnnotationFile(string filename) {
-
 	AnnotatedImage image;
-
 	ifstream inputFile(filename.c_str());
 	if (!inputFile) {
 		printf("Cannot open data file [%s]\n", filename.c_str());
@@ -53,6 +51,34 @@ AnnotatedImage AnnotationFileParser::parseCaltechAnnotationFile(string filename)
 	Rect r(Point(x1, y1), Point(x2, y2));
 	a.boundingBox = r;
 	image.objects.push_back(a);
+	return image;
+}
+
+AnnotatedImage AnnotationFileParser::parseFDDBAnnotationFile(string filename) {
+	AnnotatedImage image;
+	ifstream inputFile(filename.c_str());
+	if (!inputFile) {
+		printf("Cannot open data file [%s]\n", filename.c_str());
+		exit(EXIT_FAILURE);
+	}
+
+	string line;
+	double x1, x2, y1, y2, ignore;
+	char comma;
+
+	while (getline(inputFile, line)) {
+		istringstream ss(line);
+		ss >> ignore >> comma >> ignore >> comma;
+		ss >> x1 >> comma >> y1 >> comma;
+		ss >> ignore >> comma >> ignore >> comma;
+		ss >> x2 >> comma >> y2;
+
+		AnnotatedObject a;
+		Rect r(Point(x1, y1), Point(x2, y2));
+		a.boundingBox = r;
+		image.objects.push_back(a);
+	}
+
 	return image;
 }
 
