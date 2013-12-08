@@ -2,15 +2,17 @@
 <config>
 	<image>
 		<fileExtension>jpg</fileExtension>
-		<directory>/sb/data/faces/caltech/images</directory>
+		<directory>/sb/data/faces/lfw-deepFunneled/images</directory>
 	</image>
 	<annotations>
-		<fileExtension>txt</fileExtension>
-		<fileFormat>caltech</fileFormat>
-		<directory>/sb/data/faces/caltech/annotations</directory>
+		<fileExtension>xml</fileExtension>
+		<fileFormat>pascal</fileFormat>
+		<directory>/sb/data/faces/lfw-deepFunneled/images</directory>
 	</annotations>
 	<detection>
-		<!-->outputImages> <directory>/sb/data/faces/caltech/annotatedImages</directory> </outputImages -->
+		<outputImages>
+			<directory>/sb/data/faces/lfw-deepFunneled/annotatedImages</directory>
+		</outputImages>
 	</detection>
 	<detectors>
 		<detector>

@@ -36,7 +36,11 @@ int main(int argc, char** argv) {
 		evaluations[i].total.recall = 0;
 	}
 	vector<string> files;
-	utils::recursivelySearchDirectoryForFiles(config.imageDirectory, config.imageFileExtension, &files);
+	if (config.imageDirectoryFilterFile.length() > 0) {
+		readFilesFromFilterFile(config.imageDirectory, config.imageFileExtension, &files, config.imageDirectoryFilterFile);
+	} else {
+		utils::recursivelySearchDirectoryForFiles(config.imageDirectory, config.imageFileExtension, &files);
+	}
 
 	Mat image;
 	string filename;

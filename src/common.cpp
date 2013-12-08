@@ -7,6 +7,7 @@
 
 #include "common.h"
 #include <iostream>
+#include <fstream>
 
 Rect unionOf(Rect r1, Rect r2) {
 	int x1 = min(r1.x, r2.x);
@@ -108,5 +109,24 @@ void printConfusionMatrix(const vector<vector<int> >& confusionMatrix, map<int, 
 	cout << "\t<accuracy>" << (double(correctCount) / double(totalCount) * 100.0) << "%</accuracy>" << endl;
 	cout << "\t<accuracyCount>" << correctCount << "/" << totalCount << "</accuracyCount>" << endl;
 	cout << "</confusionMatrix>" << endl;
+}
+
+void readFilesFromFilterFile(const string directory, const string fileExtension, vector<string> *files, const string filterFile) {
+	ifstream inputFile(filterFile.c_str());
+	if (!inputFile) {
+		printf("Cannot open file: [%s]\n", filterFile.c_str());
+		exit(EXIT_FAILURE);
+	}
+
+	string line, file;
+	while (getline(inputFile, line)) {
+		istringstream iss(line);
+		iss >> file;
+		stringstream stream1;
+		stream1 << directory << "/" << file << "." << fileExtension;
+		files->push_back(stream1.str());
+//		printf("Found file: [%s]\n", stream1.str().c_str());
+	}
+	inputFile.close();
 }
 

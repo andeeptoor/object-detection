@@ -23,7 +23,7 @@ struct AnnotatedObject {
 	Rect boundingBox;
 };
 
-struct AnnotatedImage{
+struct AnnotatedImage {
 	int imageWidth, imageHeight, numberOfColors;
 	vector<AnnotatedObject> objects;
 };
@@ -56,11 +56,12 @@ struct Config {
 };
 
 Rect unionOf(Rect r1, Rect r2);
-XMLElement* getChild(const string& childName, XMLElement* parentElement) ;
-string getChildText(const string& childName, XMLElement* parentElement) ;
+XMLElement* getChild(const string& childName, XMLElement* parentElement);
+string getChildText(const string& childName, XMLElement* parentElement);
 Config readConfigFile(char* configFile);
 void showProgress(int index);
 void endProgress();
-void printConfusionMatrix(const vector<vector<int> >& confusionMatrix, map<int, string>& classLabels, const int totalCount) ;
+void printConfusionMatrix(const vector<vector<int> >& confusionMatrix, map<int, string>& classLabels, const int totalCount);
+void readFilesFromFilterFile(const string directory, const string fileExtension, vector<string> *files, const string filterFile);
 
 #endif /* COMMON_H_ */

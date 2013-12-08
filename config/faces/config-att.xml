@@ -23,5 +23,9 @@
 			<type>CascadeObjectDetector</type>
 			<model>/sb/peopleDetectionComparison/models/faces/lbpCascadeModels/opencv-default/lbpcascade_frontalface.xml</model>
 		</detector>
+		<detector>
+			<type>CascadeObjectDetector</type>
+			<model>/sb/peopleDetectionComparison/models/faces/hogCascadeModels/cbcl/cascade.xml</model>
+		</detector>
 	</detectors>
 </config>

@@ -15,6 +15,7 @@
 #include <sstream>
 #include <string>
 #include <cstring>
+#include <sys/stat.h>
 
 using namespace std;
 
@@ -85,7 +86,10 @@ double stringToDouble(char * arg) {
 
 //File operations
 bool isDirectory(string name) {
-	return opendir(name.c_str()) != NULL;
+	struct stat st;
+	lstat(name.c_str(), &st);
+	return S_ISDIR(st.st_mode);
+//	return opendir(name.c_str()) != NULL;
 }
 
 string getFileExtension(char* fileName) {
@@ -167,16 +171,20 @@ void recursivelySearchDirectoryForFiles(string directoryName, string fileExtensi
 	DIR *directory = opendir(directoryName.c_str());
 	if (directory != NULL) {
 		while ((ep = readdir(directory))) {
+//			cout << ep->d_name << endl;
 			if (utils::notEquals(ep->d_name, ".") && utils::notEquals(ep->d_name, "..")) {
 				stringstream fileNameStream;
 				fileNameStream << directoryName << "/" << ep->d_name;
 				string fileName = fileNameStream.str();
+//				cout << "[" << fileName << "]" << endl;
 				if (utils::isDirectory(fileName)) {
+//					cout << "Directory: [" << fileName << "]" << endl;
 					recursivelySearchDirectoryForFiles(fileName, fileExtension, files);
 				} else {
 					if (utils::matchesFileExtension(fileName, fileExtension)) {
 						files->push_back(fileName);
 					} else {
+//						cout << "Rejecting: [" << fileName << "]" << endl;
 					}
 				}
 			}
@@ -185,6 +193,8 @@ void recursivelySearchDirectoryForFiles(string directoryName, string fileExtensi
 	} else {
 		cout << "Could not find directory: " << directoryName << endl;
 	}
+
+//	cout << "Found [" << files->size() << "]" << endl;
 }
 
 }

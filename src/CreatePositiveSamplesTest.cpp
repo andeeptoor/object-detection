@@ -16,25 +16,6 @@
 using namespace cv;
 using namespace std;
 
-void readFilesFromFilterFile(const string directory, const string fileExtension, vector<string> *files, const string filterFila) {
-	ifstream inputFile(filterFila.c_str());
-	if (!inputFile) {
-		printf("Cannot open file: [%s]\n", filterFila.c_str());
-		exit(EXIT_FAILURE);
-	}
-
-	string line, file;
-	while (getline(inputFile, line)) {
-		istringstream iss(line);
-		iss >> file;
-		stringstream stream1;
-		stream1 << directory << "/" << file << "." << fileExtension;
-		files->push_back(stream1.str());
-//		printf("Found file: [%s]\n", stream1.str().c_str());
-	}
-	inputFile.close();
-}
-
 bool exclude(const string objectName) {
 	return false;
 //	return !utils::equals(objectName, "person");

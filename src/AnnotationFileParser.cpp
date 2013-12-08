@@ -54,14 +54,13 @@ AnnotatedImage AnnotationFileParser::parseYouTubeAnnotationFile(string filename)
 		ss >> width >> comma >> height >> comma;
 
 		AnnotatedObject a;
-		Rect r(Point(centerX-width, centerY-height), Point(centerX+width, centerY+height));
+		Rect r(Point(centerX - width, centerY - height), Point(centerX + width, centerY + height));
 		a.boundingBox = r;
 		image.objects.push_back(a);
 	}
 
 	return image;
 }
-
 
 AnnotatedImage AnnotationFileParser::parseCaltechAnnotationFile(string filename) {
 	AnnotatedImage image;
@@ -96,19 +95,18 @@ AnnotatedImage AnnotationFileParser::parseFDDBAnnotationFile(string filename) {
 		exit(EXIT_FAILURE);
 	}
 
+	//<major_axis_radius minor_axis_radius angle center_x center_y 1>
 	string line;
-	double x1, x2, y1, y2, ignore;
-	char comma;
+	double majorAxisRadius, minorAxisRadius, angle, centerX, centerY;
 
 	while (getline(inputFile, line)) {
 		istringstream ss(line);
-		ss >> ignore >> comma >> ignore >> comma;
-		ss >> x1 >> comma >> y1 >> comma;
-		ss >> ignore >> comma >> ignore >> comma;
-		ss >> x2 >> comma >> y2;
+		ss >> majorAxisRadius >> minorAxisRadius;
+		ss >> angle;
+		ss >> centerX >> centerY;
 
 		AnnotatedObject a;
-		Rect r(Point(x1, y1), Point(x2, y2));
+		Rect r(Point(centerX - minorAxisRadius, centerY - majorAxisRadius), Point(centerX + minorAxisRadius, centerY + majorAxisRadius));
 		a.boundingBox = r;
 		image.objects.push_back(a);
 	}
@@ -122,14 +120,16 @@ AnnotatedImage AnnotationFileParser::parsePascalXmlAnnotationFile(string filenam
 	XMLDocument doc;
 	doc.LoadFile(filename.c_str());
 	XMLElement* annotationElement = doc.FirstChildElement("annotation");
-	XMLElement* sizeElement = getChild("size", annotationElement);
-	image.imageWidth = utils::stringToInt(getChildText("width", sizeElement));
-	image.imageHeight = utils::stringToInt(getChildText("height", sizeElement));
-	XMLElement* depthElement = sizeElement->FirstChildElement("depth");
-	if (depthElement != NULL) {
-		image.numberOfColors = utils::stringToInt(depthElement->GetText());
-	} else {
-		image.numberOfColors = 3;
+	XMLElement * sizeElement = annotationElement->FirstChildElement("size");
+	if (sizeElement != NULL) {
+		image.imageWidth = utils::stringToInt(getChildText("width", sizeElement));
+		image.imageHeight = utils::stringToInt(getChildText("height", sizeElement));
+		XMLElement* depthElement = sizeElement->FirstChildElement("depth");
+		if (depthElement != NULL) {
+			image.numberOfColors = utils::stringToInt(depthElement->GetText());
+		} else {
+			image.numberOfColors = 3;
+		}
 	}
 
 	int x1, x2, y1, y2;

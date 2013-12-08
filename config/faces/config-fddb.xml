@@ -3,6 +3,7 @@
 	<image>
 		<fileExtension>jpg</fileExtension>
 		<directory>/sb/data/faces/FDDB/images</directory>
+		<directoryFilterFile>/sb/data/faces/FDDB/all.txt</directoryFilterFile>
 	</image>
 	<annotations>
 		<fileExtension>txt</fileExtension>
@@ -22,6 +23,10 @@
 		<detector>
 			<type>CascadeObjectDetector</type>
 			<model>/sb/peopleDetectionComparison/models/faces/lbpCascadeModels/opencv-default/lbpcascade_frontalface.xml</model>
+		</detector>
+		<detector>
+			<type>CascadeObjectDetector</type>
+			<model>/sb/peopleDetectionComparison/models/faces/hogCascadeModels/cbcl/cascade.xml</model>
 		</detector>
 	</detectors>
 </config>
