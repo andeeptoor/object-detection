@@ -27,6 +27,7 @@ private:
 	AnnotatedImage parseCaltechAnnotationFile(string annotationFile);
 	AnnotatedImage parseFDDBAnnotationFile(string annotationFile);
 	AnnotatedImage parseYouTubeAnnotationFile(string annotationFile);
+	AnnotatedImage parsePicasaAnnotationFile(string annotationFile);
 };
 
 

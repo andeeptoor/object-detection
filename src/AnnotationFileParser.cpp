@@ -26,11 +26,41 @@ AnnotatedImage AnnotationFileParser::parseAnnotationFile(string filename, string
 		return parseFDDBAnnotationFile(filename);
 	} else if (utils::equals(format, "youtube")) {
 		return parseYouTubeAnnotationFile(filename);
+	} else if (utils::equals(format, "picasa")) {
+		return parsePicasaAnnotationFile(filename);
 	}
 
 	printf("Unknown format/file extension for annotation file [%s/%s]", format.c_str(), filename.c_str());
 	exit(EXIT_FAILURE);
 
+}
+
+AnnotatedImage AnnotationFileParser::parsePicasaAnnotationFile(string filename) {
+	AnnotatedImage image;
+	ifstream inputFile(filename.c_str());
+	if (!inputFile) {
+		printf("Cannot open data file [%s]\n", filename.c_str());
+		exit(EXIT_FAILURE);
+	}
+
+	string line;
+	int x1, x2, y1, y2, width, height;
+
+	//imageWidth imageHeight faceX1 faceY1 faceX2 faceY2
+
+	while (getline(inputFile, line)) {
+		istringstream ss(line);
+		ss >> width >> height;
+		ss >> x1 >> y1 >> x2 >> y2;
+
+		AnnotatedObject a;
+//		Rect r(Point(x1 * width, y1 * height), Point(x2 * width, y2 * height));
+		Rect r(Point(x1, y1), Point(x1 + x2, y1 + y2));
+		a.boundingBox = r;
+		image.objects.push_back(a);
+	}
+
+	return image;
 }
 
 AnnotatedImage AnnotationFileParser::parseYouTubeAnnotationFile(string filename) {
