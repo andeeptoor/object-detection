@@ -44,18 +44,17 @@ AnnotatedImage AnnotationFileParser::parsePicasaAnnotationFile(string filename) 
 	}
 
 	string line;
-	int x1, x2, y1, y2, width, height;
+	int x, y, objectWidth, objectHeight, imageWidth, imageHeight;
 
-	//imageWidth imageHeight faceX1 faceY1 faceX2 faceY2
+	//imageWidth imageHeight faceX1 faceY1 faceWidth faceHeight
 
 	while (getline(inputFile, line)) {
 		istringstream ss(line);
-		ss >> width >> height;
-		ss >> x1 >> y1 >> x2 >> y2;
+		ss >> imageWidth >> imageHeight;
+		ss >> x >> y >> objectWidth >> objectHeight;
 
 		AnnotatedObject a;
-//		Rect r(Point(x1 * width, y1 * height), Point(x2 * width, y2 * height));
-		Rect r(Point(x1, y1), Point(x1 + x2, y1 + y2));
+		Rect r(Point(x, y), Point(x + objectWidth, y + objectHeight));
 		a.boundingBox = r;
 		image.objects.push_back(a);
 	}
